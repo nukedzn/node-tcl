@@ -1,0 +1,26 @@
+{
+  "name": "tcl",
+  "version": "1.0.0",
+  "description": "NodeJS Tcl binding",
+  "main": "index.js",
+  "scripts": {
+    "coverage": "istanbul cover _mocha -- --reporter spec",
+    "lint": "jshint index.js lib test",
+    "test": "mocha"
+  },
+  "keywords": [
+    "tcl"
+  ],
+  "author": "Uditha Atukorala <udi@geniusse.com>",
+  "license": "ISC",
+  "repository": "nukedzn/node-tcl",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^1.8.0",
+    "node-gyp": "^1.0.3"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.13",
+    "mocha": "^2.2.4"
+  }
+}

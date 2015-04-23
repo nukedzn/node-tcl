@@ -1,7 +1,7 @@
 {
   "name": "tcl",
   "version": "1.0.0",
-  "description": "NodeJS Tcl binding",
+  "description": "Node.js Tcl binding",
   "main": "index.js",
   "scripts": {
     "coverage": "istanbul cover _mocha -- --reporter spec",

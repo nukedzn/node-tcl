@@ -1,6 +1,8 @@
 node-tcl
 ========
 
+[![npm version](https://badge.fury.io/js/tcl.svg)](http://badge.fury.io/js/tcl)
+
 Node.js Tcl bindings
 
 ## Usage

@@ -7,6 +7,7 @@
         "src/tclinterp.cpp"
       ],
       "include_dirs": [
+        "include",
         "<!(node -e \"require('nan')\")"
       ],
       "link_settings": {

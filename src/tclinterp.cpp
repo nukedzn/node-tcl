@@ -76,14 +76,16 @@ NAN_METHOD( TclInterp::cmd ) {
 	NanUtf8String c( args[0] );
 
 	// evaluate commant
-	Tcl_Eval( obj->_interp, *c );
+	int code = Tcl_Eval( obj->_interp, *c );
 
 	// grab the result
 	const char * result = Tcl_GetStringResult( obj->_interp );
 	v8::Local< v8::String > ret = NanNew< v8::String >( result );
 
-	// FIXME: do we need to do any cleanup?
-	// Tcl_FreeResult( obj->_interp );
+	// check for errors
+	if ( code == TCL_ERROR ) {
+		NanThrowError( result );
+	}
 
 	NanReturnValue( ret );
 

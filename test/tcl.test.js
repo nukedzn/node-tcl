@@ -34,6 +34,14 @@ describe( 'tcl', function () {
 				done();
 			} );
 		} );
+
+		it( 'should handle errors', function ( done ) {
+			tcl.cmd( 'error {test error}', function ( err, data ) {
+				expect( err ).to.be.an.instanceof( Error );
+				expect( err.message ).to.be.string( 'test error' );
+				done();
+			} );
+		} );
 	} );
 
 } );

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "coverage": "istanbul cover _mocha -- --reporter spec",
+    "coveralls": "istanbul cover _mocha --report lcovonly -- --reporter spec && cat ./coverage/lcov.info | coveralls",
     "lint": "jshint index.js lib test",
     "test": "mocha"
   },

@@ -3,7 +3,8 @@
     {
       "target_name": "tcl",
       "sources": [
-        "src/init.cpp"
+        "src/binding.cpp",
+        "src/tclinterp.cpp"
       ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")"

@@ -11,6 +11,6 @@ var tcl = new Tcl();
 
 tcl.cmd( 'info tclversion', function ( err, data ) {
 	console.log( data );
-}
+} );
 ```
 

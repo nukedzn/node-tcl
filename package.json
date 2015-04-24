@@ -1,6 +1,6 @@
 {
   "name": "tcl",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Node.js Tcl binding",
   "main": "index.js",
   "scripts": {
@@ -14,9 +14,6 @@
   "author": "Uditha Atukorala <udi@geniusse.com>",
   "license": "ISC",
   "repository": "nukedzn/node-tcl",
-  "keywords": [
-    "tcl"
-  ],
   "files": [
     "binding.gyp",
     "index.js",

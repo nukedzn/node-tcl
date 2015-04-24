@@ -31,7 +31,8 @@ void TclInterp::init( v8::Handle< v8::Object > exports ) {
 	tpl->SetClassName( NanNew( "TclInterp" ) );
 	tpl->InstanceTemplate()->SetInternalFieldCount( 1 );
 
-	// TODO: prototypes
+	// prototypes
+	NODE_SET_PROTOTYPE_METHOD( tpl, "cmd", cmd );
 
 	NanAssignPersistent( constructor, tpl->GetFunction() );
 	exports->Set( NanNew( "TclInterp" ), tpl->GetFunction() );
@@ -56,4 +57,36 @@ NAN_METHOD( TclInterp::construct ) {
 	NanReturnValue( args.This() );
 
 }
+
+
+NAN_METHOD( TclInterp::cmd ) {
+
+	NanScope();
+
+	// validate input params
+	if ( args.Length() < 1 ) {
+		NanThrowError( "Require a Tcl command to execute" );
+	}
+
+	if (! args[0]->IsString() ) {
+		NanThrowTypeError( "Tcl command must be a string" );
+	}
+
+	TclInterp * obj = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
+	NanUtf8String c( args[0] );
+
+	// evaluate commant
+	Tcl_Eval( obj->_interp, *c );
+
+	// grab the result
+	const char * result = Tcl_GetStringResult( obj->_interp );
+	v8::Local< v8::String > ret = NanNew< v8::String >( result );
+
+	// FIXME: do we need to do any cleanup?
+	// Tcl_FreeResult( obj->_interp );
+
+	NanReturnValue( ret );
+
+}
+
 

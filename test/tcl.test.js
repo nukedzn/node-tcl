@@ -10,5 +10,11 @@ describe( 'tcl', function () {
 		done();
 	} );
 
+
+	it( 'should be able to execute a tcl command', function ( done ) {
+		var tcl = new Tcl();
+		tcl.cmd( 'info commands', done );
+	} )
+
 } );
 

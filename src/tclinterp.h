@@ -6,7 +6,7 @@
 #include <tcl.h>
 
 
-class TclInterp : node::ObjectWrap {
+class TclInterp : public node::ObjectWrap {
 public:
 	static void init( v8::Handle< v8::Object > exports );
 
@@ -15,6 +15,7 @@ private:
 	~TclInterp();
 
 	static NAN_METHOD( construct );
+	static NAN_METHOD( cmd );
 
 	static v8::Persistent<v8::Function> constructor;
 

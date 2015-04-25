@@ -73,20 +73,20 @@ NAN_METHOD( TclInterp::cmd ) {
 	}
 
 
-	TclInterp * obj = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
+	TclInterp * tcl = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
 	NanUtf8String cmd( args[0] );
 
 	// evaluate command
-	int code = Tcl_Eval( obj->_interp, *cmd );
+	int code = Tcl_Eval( tcl->_interp, *cmd );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		NanThrowError( Tcl_GetStringResult( obj->_interp ) );
+		NanThrowError( Tcl_GetStringResult( tcl->_interp ) );
 	}
 
 
 	// grab the result
-	Tcl_Obj * result = Tcl_GetObjResult( obj->_interp );
+	Tcl_Obj * result = Tcl_GetObjResult( tcl->_interp );
 
 	// return result as a string
 	const char * str_result = Tcl_GetString( result );

@@ -6,6 +6,7 @@
   "scripts": {
     "coverage": "istanbul cover _mocha -- --reporter spec",
     "coveralls": "istanbul cover _mocha --report lcovonly -- --reporter spec && cat ./coverage/lcov.info | coveralls",
+    "docs": "jsdoc -c jsdoc-conf.json ./README.md",
     "lint": "jshint index.js lib test",
     "test": "mocha"
   },

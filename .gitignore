@@ -9,6 +9,9 @@ npm-debug.log
 # istanbul
 coverage
 
+# jsdoc generated docs
+docs
+
 # swap files
 *.swp
 

@@ -16,6 +16,7 @@ private:
 
 	static NAN_METHOD( construct );
 	static NAN_METHOD( cmd );
+	static NAN_METHOD( toArray );
 
 	static v8::Persistent<v8::Function> constructor;
 

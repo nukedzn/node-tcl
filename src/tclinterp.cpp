@@ -1,5 +1,6 @@
 
 #include "tclinterp.h"
+#include <cstring>
 
 
 // initialise static vars
@@ -33,6 +34,7 @@ void TclInterp::init( v8::Handle< v8::Object > exports ) {
 
 	// prototypes
 	NODE_SET_PROTOTYPE_METHOD( tpl, "cmd", cmd );
+	NODE_SET_PROTOTYPE_METHOD( tpl, "toArray", toArray );
 
 	NanAssignPersistent( constructor, tpl->GetFunction() );
 	exports->Set( NanNew( "TclInterp" ), tpl->GetFunction() );
@@ -93,6 +95,47 @@ NAN_METHOD( TclInterp::cmd ) {
 	v8::Local< v8::String > r_string = NanNew< v8::String >( str_result );
 
 	NanReturnValue( r_string );
+
+}
+
+
+NAN_METHOD( TclInterp::toArray ) {
+
+	NanScope();
+
+	// validate input params
+	if ( args.Length() < 1 ) {
+		NanReturnUndefined();
+	}
+
+	if (! args[0]->IsString() ) {
+		NanThrowTypeError( "Input must be a string" );
+	}
+
+	TclInterp * tcl = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
+	NanUtf8String str( args[0] );
+
+	// create a Tcl string object
+	Tcl_Obj * obj = Tcl_NewStringObj( *str, strlen( *str ) );
+
+	int objc = 0;
+	Tcl_Obj **objv;
+
+	// attempt to parse as a Tcl list
+	if ( Tcl_ListObjGetElements( tcl->_interp, obj, &objc, &objv ) == TCL_OK ) {
+
+		v8::Local< v8::Array > r_array = NanNew< v8::Array >( objc );
+
+		for ( int i = 0; i < objc; i++ ) {
+			r_array->Set( i, NanNew< v8::String >( Tcl_GetString( objv[i] ) ) );
+		}
+
+		NanReturnValue( r_array );
+
+	}
+
+	// not a valid Tcl list
+	NanReturnNull();
 
 }
 

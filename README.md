@@ -14,8 +14,12 @@ Node.js Tcl bindings
 ``` js
 var tcl = require( 'tcl' );
 
-tcl.cmd( 'info tclversion', function ( err, data ) {
-	console.log( data );
+tcl.cmd( 'info tclversion', function ( err, result ) {
+	console.log( result.data() );
+} );
+
+tcl.cmd( 'info commands', function ( err, result ) {
+	console.log( result.toArray() );
 } );
 ```
 

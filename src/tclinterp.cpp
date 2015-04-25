@@ -72,22 +72,27 @@ NAN_METHOD( TclInterp::cmd ) {
 		NanThrowTypeError( "Tcl command must be a string" );
 	}
 
+
 	TclInterp * obj = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
-	NanUtf8String c( args[0] );
+	NanUtf8String cmd( args[0] );
 
-	// evaluate commant
-	int code = Tcl_Eval( obj->_interp, *c );
-
-	// grab the result
-	const char * result = Tcl_GetStringResult( obj->_interp );
-	v8::Local< v8::String > ret = NanNew< v8::String >( result );
+	// evaluate command
+	int code = Tcl_Eval( obj->_interp, *cmd );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		NanThrowError( result );
+		NanThrowError( Tcl_GetStringResult( obj->_interp ) );
 	}
 
-	NanReturnValue( ret );
+
+	// grab the result
+	Tcl_Obj * result = Tcl_GetObjResult( obj->_interp );
+
+	// return result as a string
+	const char * str_result = Tcl_GetString( result );
+	v8::Local< v8::String > r_string = NanNew< v8::String >( str_result );
+
+	NanReturnValue( r_string );
 
 }
 

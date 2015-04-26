@@ -27,7 +27,7 @@ You can execute any Tcl command that is supported by the Tcl shell (```tchsh```)
 and you can even load native Tcl modeles (```load module.so```), source scripts
 (```source filename.tcl```) and source Tcl libraries (```package require name```).
 
-**Note :** Only the synchronous commands preserve states from one call to another.
+**Note :** Only synchronous commands preserve states from one call to another.
 Asynchronous commands are executed in a separate thread using a new Tcl Interpreter
 instance for each call.
 

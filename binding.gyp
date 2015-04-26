@@ -4,7 +4,8 @@
       "target_name": "tcl",
       "sources": [
         "src/binding.cpp",
-        "src/tclinterp.cpp"
+        "src/tclinterp.cpp",
+        "src/tclworker.cpp"
       ],
       "include_dirs": [
         "include",

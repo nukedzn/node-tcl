@@ -1,5 +1,6 @@
 
 #include "tclinterp.h"
+#include "tclworker.h"
 #include <cstring>
 
 
@@ -34,6 +35,7 @@ void TclInterp::init( v8::Handle< v8::Object > exports ) {
 
 	// prototypes
 	NODE_SET_PROTOTYPE_METHOD( tpl, "cmd", cmd );
+	NODE_SET_PROTOTYPE_METHOD( tpl, "cmdSync", cmdSync );
 	NODE_SET_PROTOTYPE_METHOD( tpl, "toArray", toArray );
 
 	NanAssignPersistent( constructor, tpl->GetFunction() );
@@ -62,6 +64,34 @@ NAN_METHOD( TclInterp::construct ) {
 
 
 NAN_METHOD( TclInterp::cmd ) {
+
+	NanScope();
+
+	// validate input params
+	if ( args.Length() != 2 ) {
+		NanThrowError( "Invalid number of arguments" );
+	}
+
+	if (! args[0]->IsString() ) {
+		NanThrowTypeError( "Tcl command must be a string" );
+	}
+
+	if (! args[1]->IsFunction() ) {
+		NanThrowTypeError( "Callback must be a function" );
+	}
+
+
+	// schedule an async task
+	NanUtf8String cmd( args[0] );
+	NanCallback * callback = new NanCallback( args[1].As< v8::Function >() );
+	NanAsyncQueueWorker( new TclWorker( *cmd, callback ) );
+
+	NanReturnUndefined();
+
+}
+
+
+NAN_METHOD( TclInterp::cmdSync ) {
 
 	NanScope();
 

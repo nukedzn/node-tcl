@@ -3,7 +3,6 @@
 #define TCLWORKER_H
 
 #include <nan.h>
-#include <tcl.h>
 #include <string>
 
 
@@ -21,8 +20,6 @@ protected:
 
 
 private:
-
-	Tcl_Interp  * _interp;
 
 	std::string _cmd;
 	std::string _result;

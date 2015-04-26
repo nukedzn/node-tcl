@@ -1,23 +1,15 @@
 
 #include "tclworker.h"
+#include <tcl.h>
 
 
 TclWorker::TclWorker( const char * cmd, NanCallback * callback )
 	: NanAsyncWorker( callback ), _cmd( cmd ) {
 
-	// initialise a new Tcl interpreter for the thread
-	_interp = Tcl_CreateInterp();
-	if ( TCL_OK != Tcl_Init( _interp ) ) {
-		SetErrorMessage( "Failed to initialise Tcl interpreter" );
-	}
-
 }
 
 
 TclWorker::~TclWorker() {
-
-	// cleanup
-	Tcl_DeleteInterp( _interp );
 
 }
 
@@ -50,18 +42,26 @@ void TclWorker::HandleOKCallback() {
 
 void TclWorker::Execute() {
 
-	if ( TCL_OK == Tcl_Init( _interp ) ) {
+	// initialise a new Tcl interpreter for the thread
+	Tcl_Interp * interp = Tcl_CreateInterp();
+
+	if ( TCL_OK == Tcl_Init( interp ) ) {
 
 		// evaluate command
-		int code = Tcl_Eval( _interp, _cmd.c_str() );
+		int code = Tcl_Eval( interp, _cmd.c_str() );
 
 		if ( code == TCL_ERROR ) {
-			SetErrorMessage( Tcl_GetStringResult( _interp ) );
+			SetErrorMessage( Tcl_GetStringResult( interp ) );
 		} else {
-			_result = std::string( Tcl_GetStringResult( _interp ) );
+			_result = std::string( Tcl_GetStringResult( interp ) );
 		}
 
+	} else {
+		SetErrorMessage( "Failed to initialise Tcl interpreter" );
 	}
+
+	// cleanup
+	Tcl_DeleteInterp( interp );
 
 }
 

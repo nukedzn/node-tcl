@@ -20,7 +20,7 @@ describe( 'tcl', function () {
 	} );
 
 
-	context( 'when executing a Tcl command', function () {
+	context( 'when executing a Tcl command asynchronously', function () {
 		it( 'should return a response object', function ( done ) {
 			tcl.cmd( 'info nameofexecutable', function ( err, result ) {
 				var Result = require( '../lib/result' );
@@ -45,6 +45,27 @@ describe( 'tcl', function () {
 				expect( err.message ).to.be.string( 'test error' );
 				done();
 			} );
+		} );
+	} );
+
+
+	context( 'when executing a Tcl command synchronously', function () {
+		it( 'should return a response object', function () {
+			var Result = require( '../lib/result' );
+			var result = tcl.cmdSync( 'info nameofexecutable' );
+			expect( result ).to.be.an.instanceof( Result );
+		} );
+
+		it( 'should return response data', function () {
+			var result = tcl.cmdSync( 'info cmdcount' );
+			expect( result.data() ).to.be.a( 'string' );
+			expect( isNaN( parseInt( result.data() ) ) ).to.be.false;
+		} );
+
+		it( 'should handle errors', function () {
+			var err = tcl.cmdSync( 'error {test error}' );
+			expect( err ).to.be.an.instanceof( Error );
+			expect( err.message ).to.be.string( 'test error' );
 		} );
 	} );
 

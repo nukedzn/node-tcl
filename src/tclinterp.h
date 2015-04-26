@@ -1,6 +1,6 @@
 
-#ifndef BINDING_H
-#define BINDING_H
+#ifndef TCLINTERP_H
+#define TCLINTERP_H
 
 #include <nan.h>
 #include <tcl.h>
@@ -24,5 +24,5 @@ private:
 
 };
 
-#endif /* !BINDING_H */
+#endif /* !TCLINTERP_H */
 

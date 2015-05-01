@@ -46,6 +46,20 @@ describe( 'tcl', function () {
 				done();
 			} );
 		} );
+
+		it( 'should be possible to use the method alias', function ( done ) {
+			tcl.eval( 'info cmdcount', function ( err, result ) {
+				expect( err ).to.be.null;
+				expect( result.data() ).to.be.a( 'string' );
+				expect( isNaN( parseInt( result.data() ) ) ).to.be.false;
+
+				tcl.eval( 'error {test error}', function ( err, data ) {
+					expect( err ).to.be.an.instanceof( Error );
+					expect( err.message ).to.be.string( 'test error' );
+					done();
+				} );
+			} );
+		} );
 	} );
 
 
@@ -64,6 +78,16 @@ describe( 'tcl', function () {
 
 		it( 'should handle errors', function () {
 			var err = tcl.cmdSync( 'error {test error}' );
+			expect( err ).to.be.an.instanceof( Error );
+			expect( err.message ).to.be.string( 'test error' );
+		} );
+
+		it( 'should be possible to use the method alias', function () {
+			var result = tcl.evalSync( 'info cmdcount' );
+			expect( result.data() ).to.be.a( 'string' );
+			expect( isNaN( parseInt( result.data() ) ) ).to.be.false;
+
+			var err = tcl.evalSync( 'error {test error}' );
 			expect( err ).to.be.an.instanceof( Error );
 			expect( err.message ).to.be.string( 'test error' );
 		} );

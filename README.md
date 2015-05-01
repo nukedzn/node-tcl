@@ -42,7 +42,7 @@ tcl.cmd( 'info tclversion', function ( err, result ) {
 	console.log( result.data() );
 } );
 
-tcl.cmd( 'info commands', function ( err, result ) {
+tcl.eval( 'info commands', function ( err, result ) {
 	console.log( result.toArray() );
 } );
 ```

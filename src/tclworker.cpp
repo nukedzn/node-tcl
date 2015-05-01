@@ -48,7 +48,7 @@ void TclWorker::Execute() {
 	if ( TCL_OK == Tcl_Init( interp ) ) {
 
 		// evaluate command
-		int code = Tcl_Eval( interp, _cmd.c_str() );
+		int code = Tcl_EvalEx( interp, _cmd.c_str(), -1, TCL_EVAL_DIRECT );
 
 		if ( code == TCL_ERROR ) {
 			SetErrorMessage( Tcl_GetStringResult( interp ) );

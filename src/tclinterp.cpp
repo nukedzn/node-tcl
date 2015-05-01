@@ -109,7 +109,7 @@ NAN_METHOD( TclInterp::cmdSync ) {
 	NanUtf8String cmd( args[0] );
 
 	// evaluate command
-	int code = Tcl_Eval( tcl->_interp, *cmd );
+	int code = Tcl_EvalEx( tcl->_interp, *cmd, -1, 0 );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {

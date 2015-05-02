@@ -52,7 +52,7 @@ describe( 'tcl', function () {
 			} );
 		} );
 
-		it( 'should be possible to use the method alias', function ( done ) {
+		it( 'should be possible to use the method aliases', function ( done ) {
 			tcl.eval( 'info cmdcount', function ( err, result ) {
 				expect( err ).to.be.null;
 				expect( result.data() ).to.be.a( 'string' );

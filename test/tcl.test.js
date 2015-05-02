@@ -8,9 +8,9 @@ var tcl    = require( '../' );
 
 describe( 'tcl', function () {
 
-	it( 'should have _interp property', function () {
-		expect( tcl ).to.have.property( '_interp' );
-		expect( tcl._interp ).to.be.an( 'object' );
+	it( 'should have _binding property', function () {
+		expect( tcl ).to.have.property( '_binding' );
+		expect( tcl._binding ).to.be.an( 'object' );
 	} );
 
 	it( 'should be able to return Tcl version', function () {

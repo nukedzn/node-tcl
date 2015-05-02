@@ -10,7 +10,7 @@ class TclWorker : public NanAsyncWorker {
 public:
 
 	TclWorker( const char * cmd, NanCallback * callback );
-	~TclWorker();
+	virtual ~TclWorker();
 
 	void Execute();
 

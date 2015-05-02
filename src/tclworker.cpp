@@ -18,24 +18,13 @@ void TclWorker::HandleOKCallback() {
 
 	NanScope();
 
-	if (! ErrorMessage() ) {
-
-		v8::Local< v8::Value > argv[] = {
-			NanNull(),
-			NanNew< v8::String >( _result )
-		};
-
-		callback->Call( 2, argv );
-		return;
-
-	}
-
-	// invalid result
 	v8::Local< v8::Value > argv[] = {
-		v8::Exception::Error( NanNew< v8::String >( "Invalid Tcl result object" ) )
+		NanNull(),
+		NanNew< v8::String >( _result )
 	};
 
-	callback->Call( 1, argv );
+	callback->Call( 2, argv );
+	return;
 
 }
 

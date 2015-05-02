@@ -10,7 +10,7 @@ var Result  = require( '../lib/result' );
 describe( 'Result', function () {
 
 	// tcl interpreter object
-	var interp = new binding.TclInterp();
+	var interp = new binding.TclBinding();
 
 
 	it( 'should have a _result property ', function () {

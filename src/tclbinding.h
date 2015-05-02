@@ -1,18 +1,18 @@
 
-#ifndef TCLINTERP_H
-#define TCLINTERP_H
+#ifndef TCLBINDING_H
+#define TCLBINDING_H
 
 #include <nan.h>
 #include <tcl.h>
 
 
-class TclInterp : public node::ObjectWrap {
+class TclBinding : public node::ObjectWrap {
 public:
 	static void init( v8::Handle< v8::Object > exports );
 
 private:
-	explicit TclInterp();
-	~TclInterp();
+	explicit TclBinding();
+	~TclBinding();
 
 	static NAN_METHOD( construct );
 	static NAN_METHOD( cmd );
@@ -25,5 +25,9 @@ private:
 
 };
 
-#endif /* !TCLINTERP_H */
+
+// node addon initialisation
+NODE_MODULE( tcl, TclBinding::init )
+
+#endif /* !TCLBINDING_H */
 

@@ -1,13 +1,13 @@
 
-#include "tclinterp.h"
+#include "tclbinding.h"
 #include "tclworker.h"
 #include <cstring>
 
 
 // initialise static vars
-v8::Persistent<v8::Function> TclInterp::constructor;
+v8::Persistent<v8::Function> TclBinding::constructor;
 
-TclInterp::TclInterp() {
+TclBinding::TclBinding() {
 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
@@ -18,19 +18,19 @@ TclInterp::TclInterp() {
 }
 
 
-TclInterp::~TclInterp() {
+TclBinding::~TclBinding() {
 	// cleanup
 	Tcl_DeleteInterp( _interp );
 }
 
 
-void TclInterp::init( v8::Handle< v8::Object > exports ) {
+void TclBinding::init( v8::Handle< v8::Object > exports ) {
 
 	NanScope();
 
 	// prepare constructor template
 	v8::Local< v8::FunctionTemplate > tpl = NanNew< v8::FunctionTemplate >( construct );
-	tpl->SetClassName( NanNew( "TclInterp" ) );
+	tpl->SetClassName( NanNew( "TclBinding" ) );
 	tpl->InstanceTemplate()->SetInternalFieldCount( 1 );
 
 	// prototypes
@@ -39,31 +39,31 @@ void TclInterp::init( v8::Handle< v8::Object > exports ) {
 	NODE_SET_PROTOTYPE_METHOD( tpl, "toArray", toArray );
 
 	NanAssignPersistent( constructor, tpl->GetFunction() );
-	exports->Set( NanNew( "TclInterp" ), tpl->GetFunction() );
+	exports->Set( NanNew( "TclBinding" ), tpl->GetFunction() );
 
 }
 
 
-NAN_METHOD( TclInterp::construct ) {
+NAN_METHOD( TclBinding::construct ) {
 
 	NanScope();
 
 	if (! args.IsConstructCall() ) {
 
-		// invoked as `TclInterp(...)`, convert to a constructor call
+		// invoked as `TclBinding(...)`, convert to a constructor call
 		v8::Local< v8::Function > c = NanNew< v8::Function >( constructor );
 		NanReturnValue( c->NewInstance() );
 
 	}
 
-	TclInterp * obj = new TclInterp();
+	TclBinding * obj = new TclBinding();
 	obj->Wrap( args.This() );
 	NanReturnValue( args.This() );
 
 }
 
 
-NAN_METHOD( TclInterp::cmd ) {
+NAN_METHOD( TclBinding::cmd ) {
 
 	NanScope();
 
@@ -91,7 +91,7 @@ NAN_METHOD( TclInterp::cmd ) {
 }
 
 
-NAN_METHOD( TclInterp::cmdSync ) {
+NAN_METHOD( TclBinding::cmdSync ) {
 
 	NanScope();
 
@@ -105,7 +105,7 @@ NAN_METHOD( TclInterp::cmdSync ) {
 	}
 
 
-	TclInterp * tcl = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
+	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
 	NanUtf8String cmd( args[0] );
 
 	// evaluate command
@@ -129,7 +129,7 @@ NAN_METHOD( TclInterp::cmdSync ) {
 }
 
 
-NAN_METHOD( TclInterp::toArray ) {
+NAN_METHOD( TclBinding::toArray ) {
 
 	NanScope();
 
@@ -142,7 +142,7 @@ NAN_METHOD( TclInterp::toArray ) {
 		NanThrowTypeError( "Input must be a string" );
 	}
 
-	TclInterp * tcl = ObjectWrap::Unwrap< TclInterp >( args.Holder() );
+	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
 	NanUtf8String str( args[0] );
 
 	// create a Tcl string object

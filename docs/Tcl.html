@@ -268,7 +268,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line35">line 35</a>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -401,7 +401,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line62">line 62</a>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -450,6 +450,342 @@
 </dl>
 
     
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="eval"><span class="type-signature"></span>eval<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Alias for <a href="Tcl.html#cmd">Tcl#cmd</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line58">line 58</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Tcl.html#cmd">Tcl#cmd</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="evalSync"><span class="type-signature"></span>evalSync<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Alias for <a href="Tcl.html#cmdSync">Tcl#cmdSync</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line87">line 87</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Tcl.html#cmdSync">Tcl#cmdSync</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="queue"><span class="type-signature"></span>queue<span class="signature">(cmd, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Add a Tcl command to the asynchronous processing queue. Each command
+  added will be executed using a single worker thread outside of the
+  main event loop. Each command shares the same worker thread and the
+  Tcl interpreter instance and will share states.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cmd</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">command to execute</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Tcl.html#~cmdCallback">Tcl~cmdCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">callback method to handle
+         the response</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line100">line 100</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -509,7 +845,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line78">line 78</a>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -695,7 +1031,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line91">line 91</a>
+        <a href="lib_tcl.js.html">lib/tcl.js</a>, <a href="lib_tcl.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -741,7 +1077,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Sun Apr 26 2015 21:05:02 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Sat May 02 2015 19:46:36 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

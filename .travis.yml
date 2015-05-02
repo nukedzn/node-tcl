@@ -1,7 +1,7 @@
 language: node_js
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y tcl-dev; fi
+  - ./travis-env.sh
 
 node_js:
   - "0.10"

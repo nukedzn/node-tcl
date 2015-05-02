@@ -1,5 +1,7 @@
 language: node_js
 
+sudo: false
+
 before_install:
   - ./travis-env.sh
 

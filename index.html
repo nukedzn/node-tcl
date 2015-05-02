@@ -51,25 +51,39 @@ to link to.</p>
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>You can execute any Tcl command that is supported by the Tcl shell (<code>tchsh</code>)
-and you can even load native Tcl modeles (<code>load module.so</code>), source scripts
+<p>You can execute any Tcl command supported by the Tcl shell (<code>tchsh</code>) and you
+can even load native Tcl modeles (<code>load module.so</code>), source scripts
 (<code>source filename.tcl</code>) and source Tcl libraries (<code>package require name</code>).</p>
 
-<p><strong>Note :</strong> Only synchronous commands preserve states from one call to another.
-Asynchronous commands are executed in a separate thread using a new Tcl Interpreter
-instance for each call.</p>
+<p><strong>Note :</strong> Asynchronous commands (<code>cmd</code> and <code>eval</code>) are executed usng a
+dedicated worker thread using a new Tcl Interpreter instance and comes with the
+overhead of creating and destroying a Tcl Interpreter for each call. But these
+executions are parallel and useful for batched tasks.</p>
 
 <div class="highlight highlight-js"><pre><span class="pl-k">var</span> tcl <span class="pl-k">=</span> <span class="pl-c1">require</span>( <span class="pl-s"><span class="pl-pds">'</span>tcl<span class="pl-pds">'</span></span> );
 
+<span class="pl-c">// synchronous commands</span>
 <span class="pl-en">console</span><span class="pl-c1">.log</span>( tcl.<span class="pl-c1">version</span>() );
 <span class="pl-en">console</span><span class="pl-c1">.log</span>( tcl.cmdSync( <span class="pl-s"><span class="pl-pds">'</span>info tclversion<span class="pl-pds">'</span></span> ) );
+<span class="pl-en">console</span><span class="pl-c1">.log</span>( tcl.evalSync( <span class="pl-s"><span class="pl-pds">'</span>info tclversion<span class="pl-pds">'</span></span> ) );
+
+
+<span class="pl-c">// asynchronous commands (parallelly executed in decated threads)</span>
 
 tcl.cmd( <span class="pl-s"><span class="pl-pds">'</span>info tclversion<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
     <span class="pl-en">console</span><span class="pl-c1">.log</span>( result.<span class="pl-c1">data</span>() );
 } );
 
-tcl.cmd( <span class="pl-s"><span class="pl-pds">'</span>info commands<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
+tcl.<span class="pl-c1">eval</span>( <span class="pl-s"><span class="pl-pds">'</span>info commands<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
     <span class="pl-en">console</span><span class="pl-c1">.log</span>( result.toArray() );
+} );
+
+
+<span class="pl-c">// queued asynchronous commands (executed in a shared thread)</span>
+
+tcl.queue( <span class="pl-s"><span class="pl-pds">'</span>set x 0<span class="pl-pds">'</span></span> );
+tcl.queue( <span class="pl-s"><span class="pl-pds">'</span>incr $x<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
+    <span class="pl-en">console</span><span class="pl-c1">.log</span>( result );
 } );</pre></div>
 
 <h2>

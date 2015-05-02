@@ -23,20 +23,26 @@ $ npm install --save tcl
 
 ## Usage
 
-You can execute any Tcl command that is supported by the Tcl shell (```tchsh```)
-and you can even load native Tcl modeles (```load module.so```), source scripts
+You can execute any Tcl command supported by the Tcl shell (```tchsh```) and you
+can even load native Tcl modeles (```load module.so```), source scripts
 (```source filename.tcl```) and source Tcl libraries (```package require name```).
 
-**Note :** Only synchronous commands preserve states from one call to another.
-Asynchronous commands are executed in a separate thread using a new Tcl Interpreter
-instance for each call.
+**Note :** Asynchronous commands (```cmd``` and ```eval```) are executed usng a
+dedicated worker thread using a new Tcl Interpreter instance and comes with the
+overhead of creating and destroying a Tcl Interpreter for each call. But these
+executions are parallel and useful for batched tasks.
 
 
 ``` js
 var tcl = require( 'tcl' );
 
+// synchronous commands
 console.log( tcl.version() );
 console.log( tcl.cmdSync( 'info tclversion' ) );
+console.log( tcl.evalSync( 'info tclversion' ) );
+
+
+// asynchronous commands (parallelly executed in decated threads)
 
 tcl.cmd( 'info tclversion', function ( err, result ) {
 	console.log( result.data() );
@@ -44,6 +50,14 @@ tcl.cmd( 'info tclversion', function ( err, result ) {
 
 tcl.eval( 'info commands', function ( err, result ) {
 	console.log( result.toArray() );
+} );
+
+
+// queued asynchronous commands (executed in a shared thread)
+
+tcl.queue( 'set x 0' );
+tcl.queue( 'incr $x', function ( err, result ) {
+	console.log( result );
 } );
 ```
 

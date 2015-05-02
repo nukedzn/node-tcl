@@ -5,6 +5,8 @@
 #include <nan.h>
 #include <tcl.h>
 
+#include "taskrunner.h"
+
 
 class TclBinding : public node::ObjectWrap {
 public:
@@ -17,11 +19,14 @@ private:
 	static NAN_METHOD( construct );
 	static NAN_METHOD( cmd );
 	static NAN_METHOD( cmdSync );
+	static NAN_METHOD( queue );
 	static NAN_METHOD( toArray );
 
 	static v8::Persistent<v8::Function> constructor;
 
 	Tcl_Interp * _interp;
+
+	TaskRunner _tasks;
 
 };
 

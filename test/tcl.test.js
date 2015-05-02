@@ -93,5 +93,41 @@ describe( 'tcl', function () {
 		} );
 	} );
 
+
+	context( 'when using async queue to execute Tcl commands', function () {
+
+		it( 'should return response data', function ( done ) {
+			tcl.queue( 'info cmdcount', function ( err, result ) {
+				var Result = require( '../lib/result' );
+				expect( err ).to.be.null;
+				expect( result ).to.be.an.instanceof( Result );
+				expect( result.data() ).to.be.a( 'string' );
+				expect( isNaN( parseInt( result.data() ) ) ).to.be.false;
+				done();
+			} );
+		} );
+
+		it( 'should handle errors', function ( done ) {
+			tcl.queue( 'error {test error}', function ( err, data ) {
+				expect( err ).to.be.an.instanceof( Error );
+				expect( err.message ).to.be.string( 'test error' );
+				done();
+			} );
+		} );
+
+		it( 'should share state between commands', function ( done ) {
+			tcl.queue( 'set x 0', function ( err, result ) {
+				expect( err ).to.be.null;
+
+				tcl.queue( 'incr $x', function ( err, result ) {
+					expect( err ).to.be.null;
+					expect( parseInt( result.data() ) ).to.equal( 1 );
+					done();
+				} );
+			} );
+		} );
+
+	} );
+
 } );
 

@@ -36,6 +36,7 @@ void TclBinding::init( v8::Handle< v8::Object > exports ) {
 	// prototypes
 	NODE_SET_PROTOTYPE_METHOD( tpl, "cmd", cmd );
 	NODE_SET_PROTOTYPE_METHOD( tpl, "cmdSync", cmdSync );
+	NODE_SET_PROTOTYPE_METHOD( tpl, "queue", queue );
 	NODE_SET_PROTOTYPE_METHOD( tpl, "toArray", toArray );
 
 	NanAssignPersistent( constructor, tpl->GetFunction() );
@@ -125,6 +126,36 @@ NAN_METHOD( TclBinding::cmdSync ) {
 	v8::Local< v8::String > r_string = NanNew< v8::String >( str_result );
 
 	NanReturnValue( r_string );
+
+}
+
+
+NAN_METHOD( TclBinding::queue ) {
+
+	NanScope();
+
+	// validate input params
+	if ( args.Length() != 2 ) {
+		NanThrowError( "Invalid number of arguments" );
+	}
+
+	if (! args[0]->IsString() ) {
+		NanThrowTypeError( "Tcl command must be a string" );
+	}
+
+	if (! args[1]->IsFunction() ) {
+		NanThrowTypeError( "Callback must be a function" );
+	}
+
+
+	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
+
+	// queue the task
+	NanUtf8String cmd( args[0] );
+	NanCallback * callback = new NanCallback( args[1].As< v8::Function >() );
+	tcl->_tasks.queue( * cmd, callback );
+
+	NanReturnUndefined();
 
 }
 

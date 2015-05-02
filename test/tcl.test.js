@@ -44,6 +44,15 @@ describe( 'tcl', function () {
 			} );
 		} );
 
+		it( 'should be possible to convert resonse data to an array', function ( done ) {
+			tcl.eval( 'info commands', function ( err, result ) {
+				expect( err ).to.be.null;
+				expect( result.data() ).to.be.a( 'string' );
+				expect( result.toArray() ).to.be.an.instanceof( Array );
+				done();
+			} );
+		} );
+
 		it( 'should handle errors', function ( done ) {
 			tcl.cmd( 'error {test error}', function ( err, data ) {
 				expect( err ).to.be.an.instanceof( Error );

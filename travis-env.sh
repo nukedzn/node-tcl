@@ -17,19 +17,19 @@ then
 	then
 
 		# 12.04 doesn't have c++11 compatible compiler, so we'll install g++ 4.8
-		add-apt-repository -y ppa:ubuntu-toolchain-r/test
-		apt-get update
-		apt-get install -y gcc-4.8 g++-4.8
-		update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+		sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+		sudo apt-get update
+		sudo apt-get install -y gcc-4.8 g++-4.8
+		sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
 
 	else
 
 		# update apt-get
-		apt-get update
+		sudo apt-get update
 
 	fi
 
-	apt-get install -y tcl-dev
+	sudo apt-get install -y tcl-dev
 
 fi
 

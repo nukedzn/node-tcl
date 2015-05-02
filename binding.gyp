@@ -6,7 +6,7 @@
         "src/tclbinding.cpp",
         "src/tclworker.cpp",
         "src/taskrunner.cpp",
-        "src/asynctask.cpp"
+        "src/asynchandler.cpp"
       ],
       "conditions": [
         [ 'OS=="mac"', {

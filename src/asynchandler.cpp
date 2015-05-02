@@ -1,19 +1,19 @@
 
-#include "asynctask.h"
+#include "asynchandler.h"
 
 
-AsyncTask::AsyncTask( NanCallback * callback )
+AsyncHandler::AsyncHandler( NanCallback * callback )
 	: NanAsyncWorker( callback ), _notify( false ) {
 	// constructor
 }
 
 
-AsyncTask::~AsyncTask() {
+AsyncHandler::~AsyncHandler() {
 	// destructor
 }
 
 
-void AsyncTask::HandleOKCallback() {
+void AsyncHandler::HandleOKCallback() {
 
 	NanScope();
 
@@ -28,7 +28,7 @@ void AsyncTask::HandleOKCallback() {
 }
 
 
-void AsyncTask::notify( const std::string &err, const std::string &data ) {
+void AsyncHandler::notify( const std::string &err, const std::string &data ) {
 
 	{
 		std::unique_lock< std::mutex > lock( _notify_mutex );
@@ -48,7 +48,7 @@ void AsyncTask::notify( const std::string &err, const std::string &data ) {
 }
 
 
-void AsyncTask::Execute() {
+void AsyncHandler::Execute() {
 
 	if (! _notify ) {
 

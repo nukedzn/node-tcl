@@ -10,7 +10,7 @@
 #include <condition_variable>
 
 #include <nan.h>
-#include "asynctask.h"
+#include "asynchandler.h"
 
 
 class TaskRunner {
@@ -18,7 +18,7 @@ public:
 
 	struct task_t {
 		std::string cmd;
-		AsyncTask * handler;
+		AsyncHandler * handler;
 	};
 
 

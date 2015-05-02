@@ -29,7 +29,7 @@ void TaskRunner::queue( const char * cmd, NanCallback * callback ) {
 
 	task_t task = {
 		cmd,
-		new AsyncTask( callback )
+		new AsyncHandler( callback )
 	};
 
 	{

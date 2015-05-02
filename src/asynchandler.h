@@ -1,6 +1,6 @@
 
-#ifndef ASYNCTASK_H
-#define ASYNCTASK_H
+#ifndef ASYNCHANDLER_H
+#define ASYNCHANDLER_H
 
 #include <nan.h>
 #include <atomic>
@@ -9,11 +9,11 @@
 #include <condition_variable>
 
 
-class AsyncTask : public NanAsyncWorker {
+class AsyncHandler : public NanAsyncWorker {
 public:
 
-	AsyncTask( NanCallback * callback );
-	virtual ~ AsyncTask();
+	AsyncHandler( NanCallback * callback );
+	virtual ~ AsyncHandler();
 
 	void notify( const std::string &err, const std::string &data );
 	void Execute();
@@ -35,5 +35,5 @@ private:
 
 };
 
-#endif /*! ASYNCTASK_H */
+#endif /*! ASYNCHANDLER_H */
 

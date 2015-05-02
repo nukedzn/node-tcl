@@ -8,9 +8,13 @@ addons:
       - ubuntu-toolchain-r-test
 
     packages:
-      - gcc-4.8
-      - g++-4.8
+      - gcc-4.9
+      - g++-4.9
       - tcl-dev
+
+env:
+  - CC=/usr/bin/gcc-4.9
+  - CXX=/usr/bin/g++-4.9
 
 node_js:
   - "0.10"

@@ -1,9 +1,16 @@
 language: node_js
 
-sudo: required
+sudo: false
 
-before_install:
-  - ./travis-env.sh
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+
+    packages:
+      - gcc-4.8
+      - g++-4.8
+      - tcl-dev
 
 node_js:
   - "0.10"

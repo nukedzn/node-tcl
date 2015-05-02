@@ -19,6 +19,11 @@ describe( 'tcl', function () {
 		expect( version ).to.be.a( 'number' );
 	} );
 
+	it( 'should cache Tcl version', function () {
+		tcl._version = '1.0-beta';
+		expect( tcl.version() ).to.equal( '1.0-beta' );
+	} );
+
 
 	context( 'when executing a Tcl command asynchronously', function () {
 		it( 'should return a response object', function ( done ) {

@@ -145,3 +145,32 @@ describe( 'tcl', function () {
 
 } );
 
+
+
+describe( 'Tcl', function () {
+
+	it( 'should have a constructor method', function () {
+		expect( tcl.Tcl ).to.be.a( 'function' );
+	} );
+
+
+	it( 'should be possible to create a new instance using the constructor method', function ( done ) {
+
+		// set a var in global instance
+		var result = tcl.cmdSync( 'set leak {leaked}' );
+		expect( result.data() ).to.equal( 'leaked' );
+
+		// create a new instance
+		var t = new tcl.Tcl();
+
+		// check for leaks
+		t.cmd( 'set val $leak', function ( err, data ) {
+			expect( err ).to.be.an.instanceof( Error );
+			expect( data ).to.be.null;
+			done();
+		} );
+
+	} );
+
+} );
+

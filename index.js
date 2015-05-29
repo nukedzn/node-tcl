@@ -7,5 +7,19 @@
 *   @module tcl
 */
 
-module.exports = require( './lib/tcl' );
+var Tcl = require( './lib/tcl' );
+var tcl = new Tcl();
+
+
+/**
+*   Exports functional invocation
+*/
+module.exports = tcl;
+
+/**
+*   Exports constructor invocation
+*
+*   @type {Tcl}
+*/
+module.exports.Tcl = Tcl;
 

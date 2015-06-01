@@ -14,9 +14,11 @@ describe( 'tcl', function () {
 	} );
 
 	it( 'should be able to return Tcl version', function () {
-		var version = parseFloat( tcl.version() );
-		expect( isNaN( version ) ).to.be.false;
-		expect( version ).to.be.a( 'number' );
+		var version = tcl.version();
+		var re      = /^(\d+)\.(\d+)\.(\d+)$/;
+		var match   = version.match( re );
+
+		expect( match ).to.be.an.instanceof( Array );
 	} );
 
 	it( 'should cache Tcl version', function () {

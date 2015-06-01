@@ -106,20 +106,20 @@ NAN_METHOD( TclBinding::cmdSync ) {
 	}
 
 
-	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
 	NanUtf8String cmd( args[0] );
 
 	// evaluate command
-	int code = Tcl_EvalEx( tcl->_interp, *cmd, -1, 0 );
+	int code = Tcl_EvalEx( binding->_interp, *cmd, -1, 0 );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		NanThrowError( Tcl_GetStringResult( tcl->_interp ) );
+		NanThrowError( Tcl_GetStringResult( binding->_interp ) );
 	}
 
 
 	// grab the result
-	Tcl_Obj * result = Tcl_GetObjResult( tcl->_interp );
+	Tcl_Obj * result = Tcl_GetObjResult( binding->_interp );
 
 	// return result as a string
 	const char * str_result = Tcl_GetString( result );
@@ -148,12 +148,12 @@ NAN_METHOD( TclBinding::queue ) {
 	}
 
 
-	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
 
 	// queue the task
 	NanUtf8String cmd( args[0] );
 	NanCallback * callback = new NanCallback( args[1].As< v8::Function >() );
-	tcl->_tasks.queue( * cmd, callback );
+	binding->_tasks.queue( * cmd, callback );
 
 	NanReturnUndefined();
 
@@ -173,7 +173,7 @@ NAN_METHOD( TclBinding::toArray ) {
 		NanThrowTypeError( "Input must be a string" );
 	}
 
-	TclBinding * tcl = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
 	NanUtf8String str( args[0] );
 
 	// create a Tcl string object
@@ -183,7 +183,7 @@ NAN_METHOD( TclBinding::toArray ) {
 	Tcl_Obj **objv;
 
 	// attempt to parse as a Tcl list
-	if ( Tcl_ListObjGetElements( tcl->_interp, obj, &objc, &objv ) == TCL_OK ) {
+	if ( Tcl_ListObjGetElements( binding->_interp, obj, &objc, &objv ) == TCL_OK ) {
 
 		v8::Local< v8::Array > r_array = NanNew< v8::Array >( objc );
 

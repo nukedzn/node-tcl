@@ -93,7 +93,13 @@ describe( 'tcl', function () {
 		} );
 
 		it( 'should handle errors', function () {
-			var err = tcl.cmdSync( 'error {test error}' );
+			var err = null;
+			try {
+				tcl.cmdSync( 'error {test error}' );
+			} catch ( e ) {
+				err = e;
+			}
+
 			expect( err ).to.be.an.instanceof( Error );
 			expect( err.message ).to.be.string( 'test error' );
 		} );
@@ -103,7 +109,13 @@ describe( 'tcl', function () {
 			expect( result.data() ).to.be.a( 'string' );
 			expect( isNaN( parseInt( result.data() ) ) ).to.be.false;
 
-			var err = tcl.evalSync( 'error {test error}' );
+			var err = null;
+			try {
+				tcl.evalSync( 'error {test error}' );
+			} catch ( e ) {
+				err = e;
+			}
+
 			expect( err ).to.be.an.instanceof( Error );
 			expect( err.message ).to.be.string( 'test error' );
 		} );

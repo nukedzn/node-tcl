@@ -1,6 +1,6 @@
 {
   "name": "tcl",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Node.js Tcl binding",
   "main": "index.js",
   "scripts": {

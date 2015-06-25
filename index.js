@@ -12,12 +12,14 @@ var tcl = new Tcl();
 
 
 /**
-*   Exports functional invocation
+*   Exports a singleton
+*
+*   @type {Tcl}
 */
 module.exports = tcl;
 
 /**
-*   Exports constructor invocation
+*   Exports a constructor
 *
 *   @type {Tcl}
 */

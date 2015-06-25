@@ -6,7 +6,7 @@
     <title>Node-tcl by nukedzn</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -44,7 +44,7 @@
 
 <p><strong>Prerequisites :</strong> You will need to have <code>tcl-dev</code> packages installed on
 your system (e.g. <code>sudo apt-get install tcl-dev</code>) for the Node.js native addon
-to link to.</p>
+to link to along with a c++11 compatible compiler (e.g. <code>g++ v4.8</code>).</p>
 
 <div class="highlight highlight-sh"><pre>$ npm install --save tcl</pre></div>
 
@@ -69,7 +69,6 @@ executions are parallel and useful for batched tasks.</p>
 
 
 <span class="pl-c">// asynchronous commands (parallelly executed in decated threads)</span>
-
 tcl.cmd( <span class="pl-s"><span class="pl-pds">'</span>info tclversion<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
     <span class="pl-en">console</span><span class="pl-c1">.log</span>( result.<span class="pl-c1">data</span>() );
 } );
@@ -80,11 +79,15 @@ tcl.<span class="pl-c1">eval</span>( <span class="pl-s"><span class="pl-pds">'</
 
 
 <span class="pl-c">// queued asynchronous commands (executed in a shared thread)</span>
-
 tcl.queue( <span class="pl-s"><span class="pl-pds">'</span>set x 0<span class="pl-pds">'</span></span> );
 tcl.queue( <span class="pl-s"><span class="pl-pds">'</span>incr $x<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> ( <span class="pl-smi">err</span>, <span class="pl-smi">result</span> ) {
     <span class="pl-en">console</span><span class="pl-c1">.log</span>( result );
 } );</pre></div>
+
+<div class="highlight highlight-js"><pre><span class="pl-k">var</span> Tcl <span class="pl-k">=</span> <span class="pl-c1">require</span>( <span class="pl-s"><span class="pl-pds">'</span>tcl<span class="pl-pds">'</span></span> ).Tcl;
+<span class="pl-k">var</span> tcl <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Tcl</span>();
+
+<span class="pl-en">console</span><span class="pl-c1">.log</span>( tcl.<span class="pl-c1">version</span>() );</pre></div>
 
 <h2>
 <a id="api-documentation" class="anchor" href="#api-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>API Documentation</h2>

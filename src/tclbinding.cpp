@@ -54,6 +54,7 @@ NAN_METHOD( TclBinding::construct ) {
 		// invoked as `TclBinding(...)`, convert to a constructor call
 		v8::Local< v8::Function > c = NanNew< v8::Function >( constructor );
 		NanReturnValue( c->NewInstance() );
+		return;
 
 	}
 

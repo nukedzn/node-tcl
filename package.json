@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Node.js Tcl binding",
   "main": "index.js",
+  "gypfile": true,
   "scripts": {
     "coverage": "istanbul cover _mocha -- --reporter spec",
     "coveralls": "istanbul cover _mocha --report lcovonly -- --reporter spec && cat ./coverage/lcov.info | coveralls",
@@ -25,8 +26,7 @@
   ],
   "dependencies": {
     "bindings": "^1.2.1",
-    "nan": "^1.8.4",
-    "node-gyp": "^2.0.2"
+    "nan": "^1.8.4"
   },
   "devDependencies": {
     "chai": "^3.1.0",

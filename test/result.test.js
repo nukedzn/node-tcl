@@ -2,14 +2,15 @@
 
 'use strict';
 
-var expect  = require( 'chai' ).expect;
-var Result  = require( '../lib/result' );
+var expect     = require( 'chai' ).expect;
+var TclBinding = require( 'bindings' )( 'tcl' ).TclBinding;
+var Result     = require( '../lib/result' );
 
 
 describe( 'Result', function () {
 
 	// tcl interpreter binding
-	var binding = new require( 'bindings' )( 'tcl' ).TclBinding();
+	var binding = new TclBinding();
 
 
 	it( 'should have a _result property ', function () {
@@ -19,8 +20,9 @@ describe( 'Result', function () {
 
 	it( 'should have a _binding property', function () {
 		var result = new Result( 'data', binding );
-		expect( result ).to.have.property( '_binding' );
-		expect( result._binding ).to.be.an( 'object' );
+		expect( result )
+			.to.have.property( '_binding' )
+			.that.is.an.instanceof( TclBinding );
 	} );
 
 	it( 'should store raw data', function () {

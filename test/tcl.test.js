@@ -8,11 +8,6 @@ var tcl    = require( '../' );
 
 describe( 'tcl', function () {
 
-	it( 'should have _binding property', function () {
-		expect( tcl ).to.have.property( '_binding' );
-		expect( tcl._binding ).to.be.an( 'object' );
-	} );
-
 	it( 'should be able to return Tcl version', function () {
 		var version = tcl.version();
 		var re      = /^(\d+)\.(\d+)\.(\d+)$/;

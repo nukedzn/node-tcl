@@ -15,6 +15,11 @@
               "OTHER_LDFLAGS": ["-stdlib=libc++"],
               "MACOSX_DEPLOYMENT_TARGET": "10.7"
             }
+        } ],
+        ["OS=='linux'", {
+			"variables": {
+			         "TCL_LIB" : "-ltcl<!(echo 'puts $tcl_version' | tclsh )",
+            }
         } ]
       ],
       "include_dirs": [
@@ -26,7 +31,7 @@
       ],
       "link_settings": {
         "libraries": [
-          "-ltcl"
+          "<(TCL_LIB)"
         ]
       }
     }

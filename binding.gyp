@@ -22,7 +22,7 @@
       ],
       'include_dirs': [
         '<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)',
-        '<!(node -e \'require('nan')\')'
+        '<!(node -e "require(\'nan\')")'
       ],
       'cflags': [
         '-std=c++11'

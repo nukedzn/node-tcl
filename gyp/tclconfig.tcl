@@ -8,7 +8,7 @@ if {[info exists env(TCLCONFIG)]} {
 } else {
 	package require Tcl 8.5
 
-	set libdir [::tcl::pkgconfig get libdir,install]
+	set libdir [::tcl::pkgconfig get libdir,runtime]
 	set tclconfig [file join $libdir tclConfig.sh]
 }
 

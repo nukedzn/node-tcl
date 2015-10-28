@@ -25,7 +25,7 @@ public:
 	TaskRunner();
 	virtual ~TaskRunner();
 
-	void queue( const char * cmd, NanCallback * callback );
+	void queue( const char * cmd, Nan::Callback * callback );
 
 
 private:

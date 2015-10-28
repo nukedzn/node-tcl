@@ -9,10 +9,10 @@
 #include <condition_variable>
 
 
-class AsyncHandler : public NanAsyncWorker {
+class AsyncHandler : public Nan::AsyncWorker {
 public:
 
-	AsyncHandler( NanCallback * callback );
+	AsyncHandler( Nan::Callback * callback );
 	virtual ~ AsyncHandler();
 
 	void notify( const std::string &err, const std::string &data );

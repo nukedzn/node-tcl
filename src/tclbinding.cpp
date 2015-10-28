@@ -5,14 +5,14 @@
 
 
 // initialise static vars
-v8::Persistent<v8::Function> TclBinding::constructor;
+Nan::Persistent< v8::Function > TclBinding::constructor;
 
 TclBinding::TclBinding() {
 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
 	if ( TCL_OK != Tcl_Init( _interp ) ) {
-		NanThrowError( "Failed to initialise Tcl interpreter" );
+		Nan::ThrowError( "Failed to initialise Tcl interpreter" );
 	}
 
 }
@@ -24,97 +24,91 @@ TclBinding::~TclBinding() {
 }
 
 
-void TclBinding::init( v8::Handle< v8::Object > exports ) {
-
-	NanScope();
+void TclBinding::init( v8::Local< v8::Object > exports ) {
 
 	// prepare constructor template
-	v8::Local< v8::FunctionTemplate > tpl = NanNew< v8::FunctionTemplate >( construct );
-	tpl->SetClassName( NanNew( "TclBinding" ) );
+	v8::Local< v8::FunctionTemplate > tpl = Nan::New< v8::FunctionTemplate >( construct );
+	tpl->SetClassName( Nan::New( "TclBinding" ).ToLocalChecked() );
 	tpl->InstanceTemplate()->SetInternalFieldCount( 1 );
 
 	// prototypes
-	NODE_SET_PROTOTYPE_METHOD( tpl, "cmd", cmd );
-	NODE_SET_PROTOTYPE_METHOD( tpl, "cmdSync", cmdSync );
-	NODE_SET_PROTOTYPE_METHOD( tpl, "queue", queue );
-	NODE_SET_PROTOTYPE_METHOD( tpl, "toArray", toArray );
+	Nan::SetPrototypeMethod( tpl, "cmd", cmd );
+	Nan::SetPrototypeMethod( tpl, "cmdSync", cmdSync );
+	Nan::SetPrototypeMethod( tpl, "queue", queue );
+	Nan::SetPrototypeMethod( tpl, "toArray", toArray );
 
-	NanAssignPersistent( constructor, tpl->GetFunction() );
-	exports->Set( NanNew( "TclBinding" ), tpl->GetFunction() );
+	constructor.Reset( tpl->GetFunction() );
+	exports->Set( Nan::New( "TclBinding" ).ToLocalChecked(), tpl->GetFunction() );
 
 }
 
 
-NAN_METHOD( TclBinding::construct ) {
+void TclBinding::construct( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
-	NanScope();
-
-	if (! args.IsConstructCall() ) {
+	if (! info.IsConstructCall() ) {
 
 		// invoked as `TclBinding(...)`, convert to a constructor call
-		v8::Local< v8::Function > c = NanNew< v8::Function >( constructor );
-		NanReturnValue( c->NewInstance() );
+		const int argc = 1;
+		v8::Local< v8::Value > argv[ argc ] = { info[0] };
+		v8::Local< v8::Function > c = Nan::New< v8::Function >( constructor );
+		return info.GetReturnValue().Set( c->NewInstance( argc, argv ) );
 
 	}
 
 	TclBinding * obj = new TclBinding();
-	obj->Wrap( args.This() );
-	NanReturnValue( args.This() );
+	obj->Wrap( info.This() );
+	info.GetReturnValue().Set( info.This() );
 
 }
 
 
-NAN_METHOD( TclBinding::cmd ) {
-
-	NanScope();
+void TclBinding::cmd( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
-	if ( args.Length() != 2 ) {
-		NanThrowError( "Invalid number of arguments" );
+	if ( info.Length() != 2 ) {
+		Nan::ThrowError( "Invalid number of arguments" );
 	}
 
-	if (! args[0]->IsString() ) {
-		NanThrowTypeError( "Tcl command must be a string" );
+	if (! info[0]->IsString() ) {
+		Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
-	if (! args[1]->IsFunction() ) {
-		NanThrowTypeError( "Callback must be a function" );
+	if (! info[1]->IsFunction() ) {
+		Nan::ThrowTypeError( "Callback must be a function" );
 	}
 
 
 	// schedule an async task
-	NanUtf8String cmd( args[0] );
-	NanCallback * callback = new NanCallback( args[1].As< v8::Function >() );
-	NanAsyncQueueWorker( new TclWorker( *cmd, callback ) );
+	Nan::Utf8String cmd( info[0] );
+	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
+	Nan::AsyncQueueWorker( new TclWorker( *cmd, callback ) );
 
-	NanReturnUndefined();
+	info.GetReturnValue().Set( Nan::Undefined() );
 
 }
 
 
-NAN_METHOD( TclBinding::cmdSync ) {
-
-	NanScope();
+void TclBinding::cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
-	if ( args.Length() < 1 ) {
-		NanThrowError( "Require a Tcl command to execute" );
+	if ( info.Length() < 1 ) {
+		Nan::ThrowError( "Require a Tcl command to execute" );
 	}
 
-	if (! args[0]->IsString() ) {
-		NanThrowTypeError( "Tcl command must be a string" );
+	if (! info[0]->IsString() ) {
+		Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
 
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
-	NanUtf8String cmd( args[0] );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
+	Nan::Utf8String cmd( info[0] );
 
 	// evaluate command
 	int code = Tcl_EvalEx( binding->_interp, *cmd, -1, 0 );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		NanThrowError( Tcl_GetStringResult( binding->_interp ) );
+		Nan::ThrowError( Tcl_GetStringResult( binding->_interp ) );
 	}
 
 
@@ -123,58 +117,54 @@ NAN_METHOD( TclBinding::cmdSync ) {
 
 	// return result as a string
 	const char * str_result = Tcl_GetString( result );
-	v8::Local< v8::String > r_string = NanNew< v8::String >( str_result );
+	v8::Local< v8::String > r_string = Nan::New< v8::String >( str_result ).ToLocalChecked();
 
-	NanReturnValue( r_string );
+	info.GetReturnValue().Set( r_string );
 
 }
 
 
-NAN_METHOD( TclBinding::queue ) {
-
-	NanScope();
+void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
-	if ( args.Length() != 2 ) {
-		NanThrowError( "Invalid number of arguments" );
+	if ( info.Length() != 2 ) {
+		Nan::ThrowError( "Invalid number of arguments" );
 	}
 
-	if (! args[0]->IsString() ) {
-		NanThrowTypeError( "Tcl command must be a string" );
+	if (! info[0]->IsString() ) {
+		Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
-	if (! args[1]->IsFunction() ) {
-		NanThrowTypeError( "Callback must be a function" );
+	if (! info[1]->IsFunction() ) {
+		Nan::ThrowTypeError( "Callback must be a function" );
 	}
 
 
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
 
 	// queue the task
-	NanUtf8String cmd( args[0] );
-	NanCallback * callback = new NanCallback( args[1].As< v8::Function >() );
+	Nan::Utf8String cmd( info[0] );
+	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
 	binding->_tasks.queue( * cmd, callback );
 
-	NanReturnUndefined();
+	info.GetReturnValue().Set( Nan::Undefined() );
 
 }
 
 
-NAN_METHOD( TclBinding::toArray ) {
-
-	NanScope();
+void TclBinding::toArray( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
-	if ( args.Length() < 1 ) {
-		NanReturnUndefined();
+	if ( info.Length() < 1 ) {
+		return info.GetReturnValue().Set( Nan::Undefined() );
 	}
 
-	if (! args[0]->IsString() ) {
-		NanThrowTypeError( "Input must be a string" );
+	if (! info[0]->IsString() ) {
+		Nan::ThrowTypeError( "Input must be a string" );
 	}
 
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( args.Holder() );
-	NanUtf8String str( args[0] );
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
+	Nan::Utf8String str( info[0] );
 
 	// create a Tcl string object
 	Tcl_Obj * obj = Tcl_NewStringObj( *str, strlen( *str ) );
@@ -185,18 +175,18 @@ NAN_METHOD( TclBinding::toArray ) {
 	// attempt to parse as a Tcl list
 	if ( Tcl_ListObjGetElements( binding->_interp, obj, &objc, &objv ) == TCL_OK ) {
 
-		v8::Local< v8::Array > r_array = NanNew< v8::Array >( objc );
+		v8::Local< v8::Array > r_array = Nan::New< v8::Array >( objc );
 
 		for ( int i = 0; i < objc; i++ ) {
-			r_array->Set( i, NanNew< v8::String >( Tcl_GetString( objv[i] ) ) );
+			r_array->Set( i, Nan::New< v8::String >( Tcl_GetString( objv[i] ) ).ToLocalChecked() );
 		}
 
-		NanReturnValue( r_array );
+		return info.GetReturnValue().Set( r_array );
 
 	}
 
 	// not a valid Tcl list
-	NanReturnNull();
+	info.GetReturnValue().Set( Nan::Null() );
 
 }
 

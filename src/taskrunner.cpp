@@ -25,7 +25,7 @@ TaskRunner::~TaskRunner() {
 }
 
 
-void TaskRunner::queue( const char * cmd, NanCallback * callback ) {
+void TaskRunner::queue( const char * cmd, Nan::Callback * callback ) {
 
 	task_t task = {
 		cmd,
@@ -37,7 +37,7 @@ void TaskRunner::queue( const char * cmd, NanCallback * callback ) {
 		_tasks.push( task );
 
 		// schedule an async worker outside of main event loop
-		NanAsyncQueueWorker( task.handler );
+		Nan::AsyncQueueWorker( task.handler );
 	}
 
 	// notify worker thread

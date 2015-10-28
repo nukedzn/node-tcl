@@ -6,10 +6,10 @@
 #include <string>
 
 
-class TclWorker : public NanAsyncWorker {
+class TclWorker : public Nan::AsyncWorker {
 public:
 
-	TclWorker( const char * cmd, NanCallback * callback );
+	TclWorker( const char * cmd, Nan::Callback * callback );
 	virtual ~TclWorker();
 
 	void Execute();

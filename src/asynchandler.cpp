@@ -2,8 +2,8 @@
 #include "asynchandler.h"
 
 
-AsyncHandler::AsyncHandler( NanCallback * callback )
-	: NanAsyncWorker( callback ), _notify( false ) {
+AsyncHandler::AsyncHandler( Nan::Callback * callback )
+	: Nan::AsyncWorker( callback ), _notify( false ) {
 	// constructor
 }
 
@@ -15,11 +15,9 @@ AsyncHandler::~AsyncHandler() {
 
 void AsyncHandler::HandleOKCallback() {
 
-	NanScope();
-
 	v8::Local< v8::Value > argv[] = {
-		NanNull(),
-		NanNew< v8::String >( _data )
+		Nan::Null(),
+		Nan::New< v8::String >( _data ).ToLocalChecked()
 	};
 
 	callback->Call( 2, argv );

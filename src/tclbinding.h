@@ -10,19 +10,19 @@
 
 class TclBinding : public node::ObjectWrap {
 public:
-	static void init( v8::Handle< v8::Object > exports );
+	static void init( v8::Local< v8::Object > exports );
 
 private:
 	explicit TclBinding();
 	~TclBinding();
 
-	static NAN_METHOD( construct );
-	static NAN_METHOD( cmd );
-	static NAN_METHOD( cmdSync );
-	static NAN_METHOD( queue );
-	static NAN_METHOD( toArray );
+	static void construct( const Nan::FunctionCallbackInfo< v8::Value > &info );
+	static void cmd( const Nan::FunctionCallbackInfo< v8::Value > &info );
+	static void cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info );
+	static void queue( const Nan::FunctionCallbackInfo< v8::Value > &info );
+	static void toArray( const Nan::FunctionCallbackInfo< v8::Value > &info );
 
-	static v8::Persistent<v8::Function> constructor;
+	static Nan::Persistent< v8::Function > constructor;
 
 	Tcl_Interp * _interp;
 

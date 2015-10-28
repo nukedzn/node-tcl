@@ -3,8 +3,8 @@
 #include <tcl.h>
 
 
-TclWorker::TclWorker( const char * cmd, NanCallback * callback )
-	: NanAsyncWorker( callback ), _cmd( cmd ) {
+TclWorker::TclWorker( const char * cmd, Nan::Callback * callback )
+	: Nan::AsyncWorker( callback ), _cmd( cmd ) {
 
 }
 
@@ -16,11 +16,9 @@ TclWorker::~TclWorker() {
 
 void TclWorker::HandleOKCallback() {
 
-	NanScope();
-
 	v8::Local< v8::Value > argv[] = {
-		NanNull(),
-		NanNew< v8::String >( _result )
+		Nan::Null(),
+		Nan::New< v8::String >( _result ).ToLocalChecked()
 	};
 
 	callback->Call( 2, argv );

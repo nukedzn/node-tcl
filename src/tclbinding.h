@@ -5,7 +5,9 @@
 #include <nan.h>
 #include <tcl.h>
 
+#ifdef ENABLE_THREADS
 #include "taskrunner.h"
+#endif
 
 
 class TclBinding : public node::ObjectWrap {
@@ -26,7 +28,9 @@ private:
 
 	Tcl_Interp * _interp;
 
+#ifdef ENABLE_THREADS
 	TaskRunner _tasks;
+#endif
 
 };
 

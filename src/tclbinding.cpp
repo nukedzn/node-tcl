@@ -1,7 +1,12 @@
 
 #include "tclbinding.h"
-#include "tclworker.h"
 #include <cstring>
+
+#ifdef ENABLE_THREADS
+#include "tclworker.h"
+#endif
+
+#define MSG_THREADS_NOT_ENABLED    "No thread support found to enable asynchronous commands"
 
 
 // initialise static vars
@@ -78,10 +83,18 @@ void TclBinding::cmd( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 	}
 
 
+	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
+
+#ifdef ENABLE_THREADS
 	// schedule an async task
 	Nan::Utf8String cmd( info[0] );
-	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
 	Nan::AsyncQueueWorker( new TclWorker( *cmd, callback ) );
+#else
+	v8::Local< v8::Value > argv[] = {
+			Nan::Error( Nan::New< v8::String >( MSG_THREADS_NOT_ENABLED ).ToLocalChecked() )
+	};
+	callback->Call( 1, argv );
+#endif
 
 	info.GetReturnValue().Set( Nan::Undefined() );
 
@@ -140,12 +153,19 @@ void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 	}
 
 
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
-
-	// queue the task
-	Nan::Utf8String cmd( info[0] );
 	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
+
+#ifdef ENABLE_THREADS
+	// queue the task
+	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
+	Nan::Utf8String cmd( info[0] );
 	binding->_tasks.queue( * cmd, callback );
+#else
+	v8::Local< v8::Value > argv[] = {
+			Nan::Error( Nan::New< v8::String >( MSG_THREADS_NOT_ENABLED ).ToLocalChecked() )
+	};
+	callback->Call( 1, argv );
+#endif
 
 	info.GetReturnValue().Set( Nan::Undefined() );
 

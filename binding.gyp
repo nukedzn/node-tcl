@@ -6,11 +6,11 @@
     {
       'target_name': 'tcl',
       'sources': [
-        'src/tclbinding.cpp',
-        'src/tclworker.cpp',
-        'src/taskrunner.cpp',
-        'src/asynchandler.cpp'
+        'src/tclbinding.cpp'
       ],
+      'variables': {
+        'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})'
+      },
       'conditions': [
         [ 'OS=="mac"', {
           'xcode_settings': {
@@ -18,6 +18,16 @@
             'OTHER_LDFLAGS': ['-stdlib=libc++'],
             'MACOSX_DEPLOYMENT_TARGET': '10.7'
           }
+        } ],
+        [ 'tclthreads==1', {
+          'defines': [
+            'ENABLE_THREADS'
+          ],
+          'sources': [
+            'src/tclworker.cpp',
+            'src/taskrunner.cpp',
+            'src/asynchandler.cpp'
+          ]
         } ]
       ],
       'include_dirs': [

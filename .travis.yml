@@ -19,8 +19,8 @@ env:
 
 node_js:
   - "0.10"
+  - "0.12"
   - "node"
-  - "iojs"
 
 script:
   - npm run lint

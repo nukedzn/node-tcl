@@ -1,4 +1,7 @@
 {
+  "variables": {
+    "tclconfig%": "<!(tclsh gyp/tclconfig.tcl)"
+  },
   "targets": [
     {
       "target_name": "tcl",
@@ -18,7 +21,7 @@
         } ]
       ],
       "include_dirs": [
-        "include",
+        "<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)",
         "<!(node -e \"require('nan')\")"
       ],
       "cflags": [
@@ -26,7 +29,7 @@
       ],
       "link_settings": {
         "libraries": [
-          "-ltcl"
+          "<!(. <(tclconfig) && echo ${TCL_LIB_SPEC})"
         ]
       }
     }

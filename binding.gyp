@@ -9,7 +9,8 @@
         'src/tclbinding.cpp'
       ],
       'variables': {
-        'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})'
+        'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})',
+        'cxx': '<!(bash gyp/cxx.sh)'
       },
       'conditions': [
         [ 'OS=="mac"', {
@@ -19,7 +20,10 @@
             'MACOSX_DEPLOYMENT_TARGET': '10.7'
           }
         } ],
-        [ 'tclthreads==1', {
+        [ 'tclthreads==1 and cxx!="false"', {
+          'cflags': [
+            '-std=c++11'
+          ],
           'defines': [
             'ENABLE_THREADS'
           ],
@@ -33,9 +37,6 @@
       'include_dirs': [
         '<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)',
         '<!(node -e "require(\'nan\')")'
-      ],
-      'cflags': [
-        '-std=c++11'
       ],
       'link_settings': {
         'libraries': [

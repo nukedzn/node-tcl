@@ -1,6 +1,6 @@
 {
   "name": "tcl",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Node.js Tcl binding",
   "main": "index.js",
   "gypfile": true,

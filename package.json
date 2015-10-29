@@ -20,7 +20,7 @@
   "files": [
     "binding.gyp",
     "index.js",
-    "include",
+    "gyp",
     "lib",
     "src"
   ],

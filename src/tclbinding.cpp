@@ -13,7 +13,11 @@
 // initialise static vars
 Nan::Persistent< v8::Function > TclBinding::constructor;
 
-TclBinding::TclBinding() : _tasks( 0 ) {
+TclBinding::TclBinding() {
+
+#if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
+	_tasks = nullptr;
+#endif
 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
@@ -27,9 +31,11 @@ TclBinding::TclBinding() : _tasks( 0 ) {
 TclBinding::~TclBinding() {
 
 	// cleanup
+#if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	if ( _tasks ) {
 		delete _tasks;
 	}
+#endif
 
 	Tcl_DeleteInterp( _interp );
 
@@ -165,7 +171,7 @@ void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
 
-	if (! binding->_tasks ) {
+	if ( binding->_tasks == nullptr ) {
 		binding->_tasks = new TaskRunner();
 	}
 

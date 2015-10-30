@@ -10,11 +10,22 @@ node-tcl
 Node.js Tcl bindings to execute Tcl commands using a native Tcl Interpreter.
 
 
-## Installation
+## Dependencies
 
-**Prerequisites :** You will need to have ```tcl-dev``` packages installed on
-your system (e.g. ```sudo apt-get install tcl-dev```) for the Node.js native addon
-to link to along with a c++11 compatible compiler (e.g. ```g++ v4.8```).
+- Tcl development files (e.g. ```sudo apt-get install tcl-dev``` or ```sudo yum install tcl-devel```)
+
+The build process will look for ```tclConfig.sh``` to identify Tcl include directory
+and linker flags. If you are using a Tcl version older than 8.5 or want to link to a specific
+Tcl installation use the ```TCLCONFIG``` environment variable to override the default behaviour
+(e.g. ```export TCLCONFIG=/path/to/tclConfig.sh```).
+
+### Optional Dependencies
+
+- Tcl thread support (To enable async commands outside the main event loop)
+- C++ compiler with support for c++11 features (To enable async command queues outside the main event loop)
+
+
+## Installation
 
 ```sh
 $ npm install --save tcl
@@ -38,6 +49,8 @@ var tcl = require( 'tcl' );
 
 // synchronous commands
 console.log( tcl.version() );
+console.log( tcl.$( 'info tclversion' ) );  // version >= 2.3.0
+console.log( tcl.$.info( 'tclversion' ) );  // version >= 2.3.0
 console.log( tcl.cmdSync( 'info tclversion' ) );
 console.log( tcl.evalSync( 'info tclversion' ) );
 

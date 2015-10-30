@@ -29,7 +29,7 @@ private:
 	Tcl_Interp * _interp;
 
 #ifdef ENABLE_THREADS
-	TaskRunner _tasks;
+	TaskRunner * _tasks;
 #endif
 
 };

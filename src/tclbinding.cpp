@@ -12,7 +12,7 @@
 // initialise static vars
 Nan::Persistent< v8::Function > TclBinding::constructor;
 
-TclBinding::TclBinding() {
+TclBinding::TclBinding() : _tasks( 0 ) {
 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
@@ -24,8 +24,14 @@ TclBinding::TclBinding() {
 
 
 TclBinding::~TclBinding() {
+
 	// cleanup
+	if ( _tasks ) {
+		delete _tasks;
+	}
+
 	Tcl_DeleteInterp( _interp );
+
 }
 
 
@@ -156,10 +162,15 @@ void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
 
 #ifdef ENABLE_THREADS
-	// queue the task
 	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
+
+	if (! binding->_tasks ) {
+		binding->_tasks = new TaskRunner();
+	}
+
+	// queue the task
 	Nan::Utf8String cmd( info[0] );
-	binding->_tasks.queue( * cmd, callback );
+	binding->_tasks->queue( * cmd, callback );
 #else
 	v8::Local< v8::Value > argv[] = {
 			Nan::Error( Nan::New< v8::String >( MSG_THREADS_NOT_ENABLED ).ToLocalChecked() )

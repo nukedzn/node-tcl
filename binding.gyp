@@ -20,15 +20,22 @@
 						'MACOSX_DEPLOYMENT_TARGET': '10.7'
 					}
 				} ],
+				[ 'tclthreads==1', {
+					'defines': [
+						'HAS_TCL_THREADS'
+					],
+					'sources': [
+						'src/tclworker.cpp'
+					]
+				} ],
 				[ 'tclthreads==1 and cxx!="false"', {
 					'cflags': [
 						'-std=c++11'
 					],
 					'defines': [
-						'ENABLE_THREADS'
+						'HAS_CXX11'
 					],
 					'sources': [
-						'src/tclworker.cpp',
 						'src/taskrunner.cpp',
 						'src/asynchandler.cpp'
 					]

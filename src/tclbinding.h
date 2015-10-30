@@ -5,7 +5,7 @@
 #include <nan.h>
 #include <tcl.h>
 
-#ifdef ENABLE_THREADS
+#if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 #include "taskrunner.h"
 #endif
 
@@ -28,7 +28,7 @@ private:
 
 	Tcl_Interp * _interp;
 
-#ifdef ENABLE_THREADS
+#if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	TaskRunner * _tasks;
 #endif
 

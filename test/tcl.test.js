@@ -3,6 +3,8 @@
 'use strict';
 
 var expect = require( 'chai' ).expect;
+var path   = require( 'path' );
+var sinon  = require( 'sinon' );
 var tcl    = require( '../' );
 
 
@@ -169,6 +171,32 @@ describe( 'tcl', function () {
 
 			result = tcl.$.add( 1, 2 );
 			expect( parseInt( result.data() ) ).to.eql( 3 );
+		} );
+	} );
+
+
+	context( 'when sourcing tcl files', function () {
+		it( 'should update internal tcl command references', function () {
+			tcl.source( path.join( __dirname, 'support/script.tcl' ) );
+			expect( tcl.$.multiply ).to.be.a.method;
+
+			var result = tcl.$.multiply( 5, 10 );
+			expect( parseInt( result.data() ) ).to.eql( 50 );
+		} );
+	} );
+
+
+	context( 'when loading tcl modules', function () {
+		it( 'should update internal tcl command references', function () {
+			sinon.stub( tcl, '$' );
+			sinon.stub( tcl, '$inject' );
+
+			tcl.load( 'libdummy.so' );
+			expect( tcl.$.calledOnce ).to.be.true;
+			expect( tcl.$inject.calledOnce ).to.be.true;
+
+			tcl.$.restore();
+			tcl.$inject.restore();
 		} );
 	} );
 

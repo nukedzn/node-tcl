@@ -21,6 +21,11 @@ describe( 'tcl', function () {
 		expect( tcl.version() ).to.equal( '1.0-beta' );
 	} );
 
+	it( 'should inject tcl commands as javascript functions', function () {
+		expect( tcl.$.info ).to.be.a.method;
+		expect( tcl.$.set ).to.be.a.method;
+	} );
+
 
 	context( 'when executing a Tcl command asynchronously', function () {
 		it( 'should return a response object', function ( done ) {
@@ -150,6 +155,15 @@ describe( 'tcl', function () {
 			} );
 		} );
 
+	} );
+
+
+	context( 'when executing injected javascript functions', function () {
+		it( 'should pass arguments correctly', function () {
+			var hostname = tcl.$( 'info hostname' ).data();
+			var result = tcl.$.set( 'hostname', '[info hostname]' );
+			expect( result.data() ).to.eql( hostname );
+		} );
 	} );
 
 } );

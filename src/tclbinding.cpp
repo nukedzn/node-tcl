@@ -44,6 +44,9 @@ TclBinding::~TclBinding() {
 
 void TclBinding::init( v8::Local< v8::Object > exports ) {
 
+	// scope
+	Nan::HandleScope scope;
+
 	// prepare constructor template
 	v8::Local< v8::FunctionTemplate > tpl = Nan::New< v8::FunctionTemplate >( construct );
 	tpl->SetClassName( Nan::New( "TclBinding" ).ToLocalChecked() );

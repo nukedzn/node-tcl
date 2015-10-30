@@ -163,6 +163,12 @@ describe( 'tcl', function () {
 			var hostname = tcl.$( 'info hostname' ).data();
 			var result = tcl.$.set( 'hostname', '[info hostname]' );
 			expect( result.data() ).to.eql( hostname );
+
+			tcl.$.proc( 'add', '{x y}', '{return [expr {$x + $y}]}' );
+			tcl.$inject();
+
+			result = tcl.$.add( 1, 2 );
+			expect( parseInt( result.data() ) ).to.eql( 3 );
 		} );
 	} );
 

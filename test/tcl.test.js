@@ -147,7 +147,7 @@ describe( 'tcl', function () {
 			tcl.queue( 'set x 0', function ( err, result ) {
 				expect( err ).to.be.null;
 
-				tcl.queue( 'incr $x', function ( err, result ) {
+				tcl.queue( 'incr x', function ( err, result ) {
 					expect( err ).to.be.null;
 					expect( parseInt( result.data() ) ).to.equal( 1 );
 					done();

@@ -49,42 +49,110 @@
 <a href="https://david-dm.org/nukedzn/node-tcl"><img src="https://david-dm.org/nukedzn/node-tcl.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/nukedzn/node-tcl#info=devDependencies"><img src="https://david-dm.org/nukedzn/node-tcl/dev-status.svg" alt="devDependency Status"></a></p>
 <p>Node.js Tcl bindings to execute Tcl commands using a native Tcl Interpreter.</p>
-<h2>Installation</h2><p><strong>Prerequisites :</strong> You will need to have <code>tcl-dev</code> packages installed on
-your system (e.g. <code>sudo apt-get install tcl-dev</code>) for the Node.js native addon
-to link to along with a c++11 compatible compiler (e.g. <code>g++ v4.8</code>).</p>
-<pre class="prettyprint source lang-sh"><code>$ npm install --save tcl</code></pre><h2>Usage</h2><p>You can execute any Tcl command supported by the Tcl shell (<code>tchsh</code>) and you
-can even load native Tcl modeles (<code>load module.so</code>), source scripts
-(<code>source filename.tcl</code>) and source Tcl libraries (<code>package require name</code>).</p>
-<p><strong>Note :</strong> Asynchronous commands (<code>cmd</code> and <code>eval</code>) are executed usng a
-dedicated worker thread using a new Tcl Interpreter instance and comes with the
-overhead of creating and destroying a Tcl Interpreter for each call. But these
-executions are parallel and useful for batched tasks.</p>
-<pre class="prettyprint source lang-js"><code>var tcl = require( 'tcl' );
+<h2>Dependencies</h2><ul>
+<li>Tcl development files (e.g. <code>sudo apt-get install tcl-dev</code> or <code>sudo yum install tcl-devel</code>)</li>
+</ul>
+<p>The build process will look for <code>tclConfig.sh</code> to identify Tcl include directory
+and linker flags. If you are using a Tcl version older than 8.5 or want to link to a specific
+Tcl installation use the <code>TCLCONFIG</code> environment variable to override the default behaviour
+(e.g. <code>export TCLCONFIG=/path/to/tclConfig.sh</code>).</p>
+<h3>Optional Dependencies</h3><ul>
+<li>Tcl thread support (To enable async commands outside the main event loop)</li>
+<li>C++ compiler with support for c++11 features (To enable async command queues outside the main event loop)</li>
+</ul>
+<h2>Installation</h2><pre class="prettyprint source lang-sh"><code>$ npm install --save tcl</code></pre><h2>Usage</h2><pre class="prettyprint source lang-js"><code>var tcl = require( 'tcl' );</code></pre><pre class="prettyprint source lang-js"><code>var Tcl = require( 'tcl' ).Tcl;
+var tcl = new Tcl();</code></pre><h3>$( cmd ), cmdSync( cmd ), evalSync( cmd )</h3><p>Execute a Tcl command synchronously and returns a <a href="http://nukedzn.github.io/node-tcl/docs/Result.html">Result</a>.</p>
+<h4>Parameters</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cmd</td>
+<td>String</td>
+<td>Command to execute</td>
+</tr>
+</tbody>
+</table>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.$( 'info version' );</code></pre><h3>$.(tcl-command)( ... )</h3><p>Execute a Tcl command using injected helper methods and returns a <a href="http://nukedzn.github.io/node-tcl/docs/Result.html">Result</a>.</p>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.$.info( 'tclversion' );
+tcl.$.set( 'x', 10 );
+tcl.$.expr( 22, '/', '7.0' );</code></pre><h3>load( module )</h3><p>Load a Tcl module and refresh injected helper methods.</p>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.load( 'libfoo.so' );
+tcl.$.foo();</code></pre><h3>source( file )</h3><p>Source a Tcl script file and refresh injected helper methods.</p>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.source( '/path/to/multiply.tcl' );
+tcl.$.multiply( 2, 3 );</code></pre><h3>cmd( cmd, callback ), eval( cmd, callback )</h3><p>Execute a Tcl command asynchronously using a new worker thread (A new Tcl interpreter
+instance will be created for each call).</p>
+<h4>Parameters</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cmd</td>
+<td>String</td>
+<td>Command to execute</td>
+</tr>
+<tr>
+<td>callback</td>
+<td><a href="http://nukedzn.github.io/node-tcl/docs/Tcl.html#~cmdCallback">Callback</a></td>
+<td>Callback method to handle the response</td>
+</tr>
+</tbody>
+</table>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.cmd( 'info tclversion', function ( err, result ) {
+    if ( err ) {
+        return console.log( err );
+    }
 
-// synchronous commands
-console.log( tcl.version() );
-console.log( tcl.cmdSync( 'info tclversion' ) );
-console.log( tcl.evalSync( 'info tclversion' ) );
-
-
-// asynchronous commands (parallelly executed in decated threads)
-tcl.cmd( 'info tclversion', function ( err, result ) {
     console.log( result.data() );
 } );
 
 tcl.eval( 'info commands', function ( err, result ) {
+    if ( err ) {
+        return console.log( err );
+    }
+
     console.log( result.toArray() );
-} );
+} );</code></pre><h3>queue( cmd, callback )</h3><p>Execute a Tcl command asynchronously using a shared worker thread. A new Tcl interpreter
+instance will be created for the worker thread but will be shared between calls.</p>
+<h4>Parameters</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cmd</td>
+<td>String</td>
+<td>Command to execute</td>
+</tr>
+<tr>
+<td>callback</td>
+<td><a href="http://nukedzn.github.io/node-tcl/docs/Tcl.html#~cmdCallback">Callback</a></td>
+<td>Callback method to handle the response</td>
+</tr>
+</tbody>
+</table>
+<h4>Example</h4><pre class="prettyprint source lang-js"><code>tcl.queue( 'set x 1' );
+tcl.queue( 'incr x', function ( err, result ) {
+    if ( err ) {
+        return console.log( err );
+    }
 
-
-// queued asynchronous commands (executed in a shared thread)
-tcl.queue( 'set x 0' );
-tcl.queue( 'incr $x', function ( err, result ) {
-    console.log( result );
-} );</code></pre><pre class="prettyprint source lang-js"><code>var Tcl = require( 'tcl' ).Tcl;
-var tcl = new Tcl();
-
-console.log( tcl.version() );</code></pre><h2>API Documentation</h2><p>JSDoc generated API documentation can be found at <a href="http://nukedzn.github.io/node-tcl/docs/">http://nukedzn.github.io/node-tcl/docs/</a>.</p>
+    console.log( result.data() ); // 2
+} );</code></pre><h2>API Documentation</h2><p>JSDoc generated API documentation can be found at <a href="http://nukedzn.github.io/node-tcl/docs/">http://nukedzn.github.io/node-tcl/docs/</a>.</p>
 <h2>Contributing</h2><p>Contributions are welcome through GitHub pull requests (<a href="https://help.github.com/articles/using-pull-requests/#fork--pull">using fork &amp; pull model</a>).</p></article>
     </section>
 
@@ -102,7 +170,7 @@ console.log( tcl.version() );</code></pre><h2>API Documentation</h2><p>JSDoc gen
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Fri Jun 26 2015 00:50:22 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.3</a> on Sat Oct 31 2015 06:12:43 GMT+0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -34,50 +34,128 @@ $ npm install --save tcl
 
 ## Usage
 
-You can execute any Tcl command supported by the Tcl shell (```tchsh```) and you
-can even load native Tcl modeles (```load module.so```), source scripts
-(```source filename.tcl```) and source Tcl libraries (```package require name```).
-
-**Note :** Asynchronous commands (```cmd``` and ```eval```) are executed usng a
-dedicated worker thread using a new Tcl Interpreter instance and comes with the
-overhead of creating and destroying a Tcl Interpreter for each call. But these
-executions are parallel and useful for batched tasks.
-
-
-``` js
+```js
 var tcl = require( 'tcl' );
+```
 
-// synchronous commands
-console.log( tcl.version() );
-console.log( tcl.$( 'info tclversion' ) );  // version >= 2.3.0
-console.log( tcl.$.info( 'tclversion' ) );  // version >= 2.3.0
-console.log( tcl.cmdSync( 'info tclversion' ) );
-console.log( tcl.evalSync( 'info tclversion' ) );
+```js
+var Tcl = require( 'tcl' ).Tcl;
+var tcl = new Tcl();
+```
+
+### $( cmd ), cmdSync( cmd ), evalSync( cmd )
+
+Execute a Tcl command synchronously and returns a [Result](http://nukedzn.github.io/node-tcl/docs/Result.html).
+
+#### Parameters
+
+| Name | Type   | Description        |
+|------|--------|--------------------|
+| cmd  | String | Command to execute |
 
 
-// asynchronous commands (parallelly executed in decated threads)
+#### Example
+
+```js
+tcl.$( 'info version' );
+```
+
+
+### $.[tcl-command]  ( args )
+
+Execute a Tcl command using injected helper methods and returns a [Result](http://nukedzn.github.io/node-tcl/docs/Result.html).
+
+#### Example
+
+```js
+tcl.$.info( 'tclversion' );
+tcl.$.set( 'x', 10 );
+tcl.$.expr( 22, '/', '7.0' );
+```
+
+
+### load( module )
+
+Load a Tcl module and refresh injected helper methods.
+
+#### Example
+
+```js
+tcl.load( 'libfoo.so' );
+tcl.$.foo();
+```
+
+
+### source( file )
+
+Source a Tcl script file and refresh injected helper methods.
+
+#### Example
+
+```js
+tcl.source( '/path/to/multiply.tcl' );
+tcl.$.multiply( 2, 3 );
+```
+
+
+### cmd( cmd, callback ), eval( cmd, callback )
+
+Execute a Tcl command asynchronously using a new worker thread (A new Tcl interpreter
+instance will be created for each call).
+
+#### Parameters
+
+| Name     | Type   | Description        |
+|----------|--------|--------------------|
+| cmd      | String | Command to execute |
+| callback | [Callback](http://nukedzn.github.io/node-tcl/docs/Tcl.html#~cmdCallback) | Callback method to handle the response |
+
+#### Example
+
+```js
 tcl.cmd( 'info tclversion', function ( err, result ) {
+	if ( err ) {
+		return console.log( err );
+	}
+
 	console.log( result.data() );
 } );
 
 tcl.eval( 'info commands', function ( err, result ) {
+	if ( err ) {
+		return console.log( err );
+	}
+
 	console.log( result.toArray() );
 } );
+```
 
 
-// queued asynchronous commands (executed in a shared thread)
-tcl.queue( 'set x 0' );
-tcl.queue( 'incr $x', function ( err, result ) {
-	console.log( result );
+### queue( cmd, callback )
+
+Execute a Tcl command asynchronously using a shared worker thread. A new Tcl interpreter
+instance will be created for the worker thread but will be shared between calls.
+
+#### Parameters
+
+| Name     | Type   | Description        |
+|----------|--------|--------------------|
+| cmd      | String | Command to execute |
+| callback | [Callback](http://nukedzn.github.io/node-tcl/docs/Tcl.html#~cmdCallback) | Callback method to handle the response |
+
+#### Example
+
+``` js
+tcl.queue( 'set x 1' );
+tcl.queue( 'incr x', function ( err, result ) {
+	if ( err ) {
+		return console.log( err );
+	}
+
+	console.log( result.data() ); // 2
 } );
 ```
 
-``` js
-var Tcl = require( 'tcl' ).Tcl;
-var tcl = new Tcl();
-
-console.log( tcl.version() );
-```
 
 
 ## API Documentation

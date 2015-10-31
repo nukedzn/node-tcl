@@ -87,15 +87,15 @@ void TclBinding::cmd( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
 	if ( info.Length() != 2 ) {
-		Nan::ThrowError( "Invalid number of arguments" );
+		return Nan::ThrowError( "Invalid number of arguments" );
 	}
 
 	if (! info[0]->IsString() ) {
-		Nan::ThrowTypeError( "Tcl command must be a string" );
+		return Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
 	if (! info[1]->IsFunction() ) {
-		Nan::ThrowTypeError( "Callback must be a function" );
+		return Nan::ThrowTypeError( "Callback must be a function" );
 	}
 
 
@@ -121,11 +121,11 @@ void TclBinding::cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
 	if ( info.Length() < 1 ) {
-		Nan::ThrowError( "Require a Tcl command to execute" );
+		return Nan::ThrowError( "Require a Tcl command to execute" );
 	}
 
 	if (! info[0]->IsString() ) {
-		Nan::ThrowTypeError( "Tcl command must be a string" );
+		return Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
 
@@ -137,7 +137,7 @@ void TclBinding::cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		Nan::ThrowError( Tcl_GetStringResult( binding->_interp ) );
+		return Nan::ThrowError( Tcl_GetStringResult( binding->_interp ) );
 	}
 
 
@@ -157,15 +157,15 @@ void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 
 	// validate input params
 	if ( info.Length() != 2 ) {
-		Nan::ThrowError( "Invalid number of arguments" );
+		return Nan::ThrowError( "Invalid number of arguments" );
 	}
 
 	if (! info[0]->IsString() ) {
-		Nan::ThrowTypeError( "Tcl command must be a string" );
+		return Nan::ThrowTypeError( "Tcl command must be a string" );
 	}
 
 	if (! info[1]->IsFunction() ) {
-		Nan::ThrowTypeError( "Callback must be a function" );
+		return Nan::ThrowTypeError( "Callback must be a function" );
 	}
 
 
@@ -201,7 +201,7 @@ void TclBinding::toArray( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
 	}
 
 	if (! info[0]->IsString() ) {
-		Nan::ThrowTypeError( "Input must be a string" );
+		return Nan::ThrowTypeError( "Input must be a string" );
 	}
 
 	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );

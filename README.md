@@ -61,7 +61,7 @@ tcl.$( 'info version' );
 ```
 
 
-### $.[tcl-command]  ( args )
+### $.`[tcl-command]`( args )
 
 Execute a Tcl command using injected helper methods and returns a [Result](http://nukedzn.github.io/node-tcl/docs/Result.html).
 

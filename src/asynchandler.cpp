@@ -15,6 +15,9 @@ AsyncHandler::~AsyncHandler() {
 
 void AsyncHandler::HandleOKCallback() {
 
+	// stack-allocated handle scope
+	Nan::HandleScope scope;
+
 	v8::Local< v8::Value > argv[] = {
 		Nan::Null(),
 		Nan::New< v8::String >( _data ).ToLocalChecked()

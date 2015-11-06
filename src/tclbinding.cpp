@@ -44,7 +44,7 @@ TclBinding::~TclBinding() {
 
 void TclBinding::init( v8::Local< v8::Object > exports ) {
 
-	// scope
+	// stack-allocated handle scope
 	Nan::HandleScope scope;
 
 	// prepare constructor template

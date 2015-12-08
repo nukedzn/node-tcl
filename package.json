@@ -4,11 +4,16 @@
   "description": "Node.js Tcl binding",
   "main": "index.js",
   "gypfile": true,
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "scripts": {
     "coverage": "istanbul cover _mocha -- --reporter spec",
-    "coveralls": "istanbul cover _mocha --report lcovonly -- --reporter spec && cat ./coverage/lcov.info | coveralls",
+    "coverage:lcovonly": "istanbul cover _mocha --report lcovonly -- --reporter spec",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "jsdoc -c jsdoc-conf.json ./README.md",
     "lint": "jshint index.js lib test",
+    "precoveralls": "npm run coverage:lcovonly",
     "test": "mocha"
   },
   "keywords": [
@@ -17,6 +22,10 @@
   "author": "Uditha Atukorala <ua@nuked.zone>",
   "license": "ISC",
   "repository": "nukedzn/node-tcl",
+  "directories": {
+    "example": "./examples",
+    "lib": "./lib"
+  },
   "files": [
     "binding.gyp",
     "index.js",

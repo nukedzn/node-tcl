@@ -18,9 +18,9 @@ env:
     - CXX=/usr/bin/g++-4.9
 
 node_js:
-  - "0.10"
   - "0.12"
-  - "node"
+  - "4.2"
+  - "stable"
 
 script:
   - npm run lint

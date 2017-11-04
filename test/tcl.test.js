@@ -24,8 +24,8 @@ describe( 'tcl', function () {
 	} );
 
 	it( 'should inject tcl commands as javascript functions', function () {
-		expect( tcl.$.info ).to.be.a.method;
-		expect( tcl.$.set ).to.be.a.method;
+		expect( typeof( tcl.$.info ) ).to.equal( 'function' );
+		expect( typeof( tcl.$.set ) ).to.equal( 'function' );
 	} );
 
 
@@ -178,7 +178,7 @@ describe( 'tcl', function () {
 	context( 'when sourcing tcl files', function () {
 		it( 'should update internal tcl command references', function () {
 			tcl.source( path.join( __dirname, 'support/script.tcl' ) );
-			expect( tcl.$.multiply ).to.be.a.method;
+			expect( typeof( tcl.$.multiply ) ).to.equal( 'function' );
 
 			var result = tcl.$.multiply( 5, 10 );
 			expect( parseInt( result.data() ) ).to.eql( 50 );

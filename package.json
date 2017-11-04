@@ -38,11 +38,11 @@
     "nan": "^2.7.0"
   },
   "devDependencies": {
-    "chai": "^3.1.0",
-    "coveralls": "^2.11.4",
-    "istanbul": "^0.4.0",
-    "jshint": "^2.8.0",
-    "mocha": "^2.3.3",
+    "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.4.5",
+    "jshint": "^2.9.5",
+    "mocha": "^4.0.1",
     "sinon": "^1.17.2"
   }
 }

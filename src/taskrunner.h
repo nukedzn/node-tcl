@@ -9,7 +9,7 @@
 #include <string>
 #include <condition_variable>
 
-#include <nan.h>
+#include <napi.h>
 #include "asynchandler.h"
 
 
@@ -25,7 +25,7 @@ public:
 	TaskRunner();
 	virtual ~TaskRunner();
 
-	void queue( const char * cmd, Nan::Callback * callback );
+//	void queue( const char * cmd, Nan::Callback * callback );
 
 
 private:

@@ -12,6 +12,9 @@
 				'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})',
 				'cxx': '<!(bash gyp/cxx.sh)'
 			},
+			'defines': [
+				'NAPI_DISABLE_CPP_EXCEPTIONS',
+			],
 			'conditions': [
 				[ 'OS=="mac"', {
 					'xcode_settings': {
@@ -45,8 +48,10 @@
 			],
 			'include_dirs': [
 				'<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)',
-				'<!(node -e "require(\'nan\')")'
+				'<!(node -p "require(\'node-addon-api\').include_dir")'
+				               
 			],
+			'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
 			'link_settings': {
 				'libraries': [
 					'<!(. <(tclconfig) && echo ${TCL_LIB_SPEC})'

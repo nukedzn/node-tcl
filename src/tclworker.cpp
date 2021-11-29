@@ -2,9 +2,8 @@
 #include "tclworker.h"
 #include <tcl.h>
 
-
-TclWorker::TclWorker( const char * cmd, Nan::Callback * callback )
-	: Nan::AsyncWorker( callback ), _cmd( cmd ) {
+TclWorker::TclWorker( Napi::Function& callback, const char * cmd )
+	: Napi::AsyncWorker( callback ), _cmd( cmd ) {
 
 }
 
@@ -14,17 +13,10 @@ TclWorker::~TclWorker() {
 }
 
 
-void TclWorker::HandleOKCallback() {
+void TclWorker::OnOK() {
+	Napi::Env env = Env();
 
-	// stack-allocated handle scope
-	Nan::HandleScope scope;
-
-	v8::Local< v8::Value > argv[] = {
-		Nan::Null(),
-		Nan::New< v8::String >( _result ).ToLocalChecked()
-	};
-
-	callback->Call( 2, argv );
+	Callback().Call({env.Null(), Napi::String::New(env, _result)});
 	return;
 
 }
@@ -41,17 +33,16 @@ void TclWorker::Execute() {
 		int code = Tcl_EvalEx( interp, _cmd.c_str(), -1, TCL_EVAL_DIRECT );
 
 		if ( code == TCL_ERROR ) {
-			SetErrorMessage( Tcl_GetStringResult( interp ) );
+			SetError( Tcl_GetStringResult( interp ) );
 		} else {
 			_result = std::string( Tcl_GetStringResult( interp ) );
 		}
 
 	} else {
-		SetErrorMessage( "Failed to initialise Tcl interpreter" );
+		SetError( "Failed to initialise Tcl interpreter" );
 	}
 
 	// cleanup
 	Tcl_DeleteInterp( interp );
 
 }
-

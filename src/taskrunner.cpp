@@ -2,7 +2,7 @@
 #include "taskrunner.h"
 #include <tcl.h>
 
-
+#ifdef DISABLE
 TaskRunner::TaskRunner() : _terminate( false ) {
 
 	// initialise worker thread
@@ -89,3 +89,4 @@ void TaskRunner::worker() {
 
 }
 
+#endif

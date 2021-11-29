@@ -2,22 +2,17 @@
 #ifndef TCLWORKER_H
 #define TCLWORKER_H
 
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
-
-class TclWorker : public Nan::AsyncWorker {
+class TclWorker : public Napi::AsyncWorker {
 public:
 
-	TclWorker( const char * cmd, Nan::Callback * callback );
+	TclWorker( Napi::Function& callback, const char * cmd );
 	virtual ~TclWorker();
 
 	void Execute();
-
-protected:
-
-	void HandleOKCallback();
-
+	void OnOK();
 
 private:
 
@@ -27,4 +22,3 @@ private:
 };
 
 #endif /* !TCLWORKER_H */
-

@@ -2,13 +2,13 @@
 #ifndef ASYNCHANDLER_H
 #define ASYNCHANDLER_H
 
-#include <nan.h>
+#include <napi.h>
 #include <atomic>
 #include <mutex>
 #include <string>
 #include <condition_variable>
 
-
+#ifdef JUNK
 class AsyncHandler : public Nan::AsyncWorker {
 public:
 
@@ -37,3 +37,4 @@ private:
 
 #endif /*! ASYNCHANDLER_H */
 
+#endif

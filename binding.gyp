@@ -24,20 +24,12 @@
 					}
 				} ],
 				[ 'cxx!="false"', {
-					'cflags': [
-						'-std=c++11'
-					],
-					'defines': [
-						'HAS_CXX11'
-					]
+					'cflags': ['-std=c++11'],
+					'defines': ['HAS_CXX11']
 				} ],
 				[ 'tclthreads==1', {
-					'defines': [
-						'HAS_TCL_THREADS'
-					],
-					'sources': [
-						'src/tclworker.cpp'
-					]
+					'defines': ['HAS_TCL_THREADS'],
+					'sources': ['src/tclworker.cpp']
 				} ],
 				[ 'tclthreads==1 and cxx!="false"', {
 					'sources': [

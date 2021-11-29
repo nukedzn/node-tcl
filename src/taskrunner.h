@@ -12,7 +12,7 @@
 #include <napi.h>
 #include "asynchandler.h"
 
-
+#ifdef JUNK
 class TaskRunner {
 public:
 
@@ -44,3 +44,4 @@ private:
 
 #endif /*! TASKRUNNER_H */
 
+#endif

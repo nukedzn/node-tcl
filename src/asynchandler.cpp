@@ -1,7 +1,7 @@
 
 #include "asynchandler.h"
 
-
+#ifdef DISABLE
 AsyncHandler::AsyncHandler( Nan::Callback * callback )
 	: Nan::AsyncWorker( callback ), _notify( false ) {
 	// constructor
@@ -60,3 +60,4 @@ void AsyncHandler::Execute() {
 
 }
 
+#endif

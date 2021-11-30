@@ -8,21 +8,15 @@
 #include <string>
 #include <condition_variable>
 
-#ifdef JUNK
-class AsyncHandler : public Nan::AsyncWorker {
+class AsyncHandler : public Napi::AsyncWorker {
 public:
 
-	AsyncHandler( Nan::Callback * callback );
+	AsyncHandler( Napi::Function& callback );
 	virtual ~ AsyncHandler();
 
 	void notify( const std::string &err, const std::string &data );
 	void Execute();
-
-
-protected:
-
-	void HandleOKCallback();
-
+	void OnOK();
 
 private:
 
@@ -36,5 +30,3 @@ private:
 };
 
 #endif /*! ASYNCHANDLER_H */
-
-#endif

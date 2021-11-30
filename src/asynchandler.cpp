@@ -1,9 +1,8 @@
 
 #include "asynchandler.h"
 
-#ifdef DISABLE
-AsyncHandler::AsyncHandler( Nan::Callback * callback )
-	: Nan::AsyncWorker( callback ), _notify( false ) {
+AsyncHandler::AsyncHandler( Napi::Function& callback )
+	: Napi::AsyncWorker( callback ), _notify( false ) {
 	// constructor
 }
 
@@ -13,17 +12,10 @@ AsyncHandler::~AsyncHandler() {
 }
 
 
-void AsyncHandler::HandleOKCallback() {
-
-	// stack-allocated handle scope
-	Nan::HandleScope scope;
-
-	v8::Local< v8::Value > argv[] = {
-		Nan::Null(),
-		Nan::New< v8::String >( _data ).ToLocalChecked()
-	};
-
-	callback->Call( 2, argv );
+void AsyncHandler::OnOK() {
+	Napi::Env env = Env();
+    
+	Callback().Call({env.Null(), Napi::String::New(env, _data)});
 	return;
 
 }
@@ -35,7 +27,7 @@ void AsyncHandler::notify( const std::string &err, const std::string &data ) {
 		std::unique_lock< std::mutex > lock( _notify_mutex );
 
 		if (! err.empty() ) {
-			SetErrorMessage( err.c_str() );
+			SetError( err.c_str() );
 		} else {
 			_data = data;
 		}
@@ -59,5 +51,3 @@ void AsyncHandler::Execute() {
 	}
 
 }
-
-#endif

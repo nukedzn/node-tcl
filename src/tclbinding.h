@@ -15,10 +15,10 @@ public:
 	TclBinding(const Napi::CallbackInfo& info);
 	~TclBinding();
 
-	Napi::Value cmd( const Napi::CallbackInfo& info);
-	Napi::Value cmdSync( const Napi::CallbackInfo& info);
-//	Napi::Value queue( const Napi::CallbackInfo& info);
-	Napi::Value toArray( const Napi::CallbackInfo& info);
+	Napi::Value cmd		( const Napi::CallbackInfo& info);
+	Napi::Value cmdSync	( const Napi::CallbackInfo& info);
+	Napi::Value queue	( const Napi::CallbackInfo& info);
+	Napi::Value toArray	( const Napi::CallbackInfo& info);
 	
 	static Napi::Function GetClass(Napi::Env);
 
@@ -27,8 +27,7 @@ private:
 	Tcl_Interp * _interp;
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
-	int * _tasks;
-//	TaskRunner * _tasks;
+	TaskRunner * _tasks;
 #endif
 
 };

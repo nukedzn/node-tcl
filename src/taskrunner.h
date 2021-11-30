@@ -12,7 +12,6 @@
 #include <napi.h>
 #include "asynchandler.h"
 
-#ifdef JUNK
 class TaskRunner {
 public:
 
@@ -25,7 +24,7 @@ public:
 	TaskRunner();
 	virtual ~TaskRunner();
 
-//	void queue( const char * cmd, Nan::Callback * callback );
+	void queue( Napi::Function& callback, const char * cmd );
 
 
 private:
@@ -43,5 +42,3 @@ private:
 };
 
 #endif /*! TASKRUNNER_H */
-
-#endif

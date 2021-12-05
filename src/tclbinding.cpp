@@ -5,22 +5,22 @@
 #ifdef HAS_TCL_THREADS
 #include "tclworker.h"
 #endif
+#include "jsfunction.h"
 
 #define MSG_NO_TCL_THREADS       "Thread support disabled, please ensure Tcl is compiled with --enable-threads flag set"
 #define MSG_NO_THREAD_SUPPORT    "Thread support disabled, check g++ version for c++11 and/or Tcl thread support"
 
-using namespace Napi;
-
 TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info) {
+	Napi::Env env = info.Env();
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	_tasks = nullptr;
 #endif
- 
+
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
+printf("I0:%p E:%p\n", _interp, &env);
 	if ( TCL_OK != Tcl_Init( _interp ) ) {
-		Napi::Env env = info.Env();
 		Napi::Error::New(env, "Failed to initialise Tcl interpreter").ThrowAsJavaScriptException();
 	}
 
@@ -38,11 +38,6 @@ TclBinding::~TclBinding() {
 
 	Tcl_DeleteInterp( _interp );
 
-}
-
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "TclBinding"), TclBinding::GetClass(env));
-  return exports;
 }
 
 Napi::Value TclBinding::cmd( const Napi::CallbackInfo& info ) {
@@ -96,6 +91,7 @@ Napi::Value TclBinding::cmdSync( const Napi::CallbackInfo& info ) {
 	}
 
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
+//printf("I1:%p c:%s\n", this->_interp, cmd.c_str());
 
 	// evaluate command
 	int code = Tcl_EvalEx( this->_interp, cmd.c_str(), -1, 0 );
@@ -190,6 +186,40 @@ Napi::Value TclBinding::toArray( const Napi::CallbackInfo& info ) {
 
 }
 
+Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
+	Napi::Env env = info.Env();
+
+	// validate input params
+	if ( info.Length() > 2 ) {
+		Napi::TypeError::New(env, "Invalid number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (! info[0].IsString() ) {
+		Napi::TypeError::New(env, "Tcl command name must be a string").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (!info[1].IsFunction() && !info[1].IsNull() ) {
+		Napi::TypeError::New(env, "Callback must be a function or null").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	std::string cmd = info[0].As<Napi::String>().Utf8Value();
+	Napi::Function callback = info[1].As<Napi::Function>();
+	JsFunction *jf = new JsFunction(env, Napi::Persistent(callback), cmd.c_str());
+
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), JsFunction::jsCommand, jf, JsFunction::jsDelete);
+
+	return Napi::Number::New(env, (unsigned long)code);
+
+}
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  exports.Set(Napi::String::New(env, "TclBinding"), TclBinding::GetClass(env));
+  return exports;
+}
+
 Napi::Function TclBinding::GetClass( Napi::Env env ) {
 
     return DefineClass(env, "TclBinding",
@@ -198,6 +228,7 @@ Napi::Function TclBinding::GetClass( Napi::Env env ) {
 			TclBinding::InstanceMethod("cmdSync",	&TclBinding::cmdSync),
 			TclBinding::InstanceMethod("queue",		&TclBinding::queue),
 			TclBinding::InstanceMethod("toArray",	&TclBinding::toArray),
+			TclBinding::InstanceMethod("jsFunc",	&TclBinding::jsFunc),
 		});
 }
 

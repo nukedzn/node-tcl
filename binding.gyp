@@ -6,7 +6,8 @@
 		{
 			'target_name': 'tcl',
 			'sources': [
-				'src/tclbinding.cpp'
+				'src/tclbinding.cpp',
+				'src/jsfunction.cpp',
 			],
 			'variables': {
 				'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})',

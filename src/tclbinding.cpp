@@ -225,13 +225,6 @@ Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
 
 }
 
-int jsCommand(ClientData, Tcl_Interp *, int, const char **) {
-	return TCL_OK;
-}
-
-void jsDelete(ClientData) {
-}
-
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "TclBinding"), TclBinding::GetClass(env));
   return exports;

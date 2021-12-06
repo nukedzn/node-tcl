@@ -24,8 +24,6 @@ public:
 	static Napi::Function GetClass(Napi::Env);
 
 private:
-	int jsCommand(ClientData, Tcl_Interp *, int, const char **);
-	void jsDelete(ClientData);
 
 	Tcl_Interp * _interp;
 	Napi::Env _env;

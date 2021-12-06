@@ -5,13 +5,11 @@
 #ifdef HAS_TCL_THREADS
 #include "tclworker.h"
 #endif
-#include "jsfunction.h"
 
 #define MSG_NO_TCL_THREADS       "Thread support disabled, please ensure Tcl is compiled with --enable-threads flag set"
 #define MSG_NO_THREAD_SUPPORT    "Thread support disabled, check g++ version for c++11 and/or Tcl thread support"
 
 TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info), _env(info.Env()) {
-//	_env = info.Env();
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	_tasks = nullptr;
@@ -19,7 +17,7 @@ TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info), _env(
 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
-printf("I0:%p E:%p\n", _interp, &_env);
+
 	if ( TCL_OK != Tcl_Init( _interp ) ) {
 		Napi::Error::New(_env, "Failed to initialise Tcl interpreter").ThrowAsJavaScriptException();
 	}
@@ -206,44 +204,21 @@ Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
 	}
 
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
-	Napi::Function jsCallback = info[1].As<Napi::Function>();
-	_func = Napi::Persistent(jsCallback);
+	_func = Napi::Persistent(info[1].As<Napi::Function>());
 	
-	_func.Call({Napi::String::New(env, "hoo")});
-	
-//	JsFunction *jf = new JsFunction(env, Napi::Persistent(callback), cmd.c_str());
-
-//	Tcl_Command code = (Tcl_Command)1234;
-
-#ifdef JUNK
-	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
-		jsCommand, (void *)jsCallback, jsDelete);
-
-	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
-		std::bind(&TclBinding::jsCommand, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
-		(void *)jsCallback, 
-		std::bind(&TclBinding::jsDelete, std::placeholders::_1)
-	);
-
-#endif
-
-printf("B:%p c:%s\n", &jsCallback, cmd.c_str());
 	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
 		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
-			auto mythis = (TclBinding *)clientData;
-			auto env = mythis->_env;
-//			Napi::FunctionReference *fr = (Napi::FunctionReference *)clientData;
-printf("CB:%p c:%s ac:%d\n", clientData, "", argc);
-			auto args = std::vector<napi_value>(argc);
-			for (auto i = 0; i < argc; ++i) {
-				args[i] = Napi::String::New(env, argv[i]);
+			TclBinding *mythis = (TclBinding *)clientData;
+			Napi::Env env = mythis->_env;
+			auto args = std::vector<napi_value>(argc-1);
+			for (int i = 1; i < argc; ++i) {
+				args[i-1] = Napi::String::New(env, argv[i]);
 			}
 			mythis->_func.Call(args);
 			return TCL_OK;
 		},
 		(void *)this, 
-		[](ClientData) {
-		}
+		[](ClientData) {}
 	);
 
 	return Napi::Number::New(env, (unsigned long)code);

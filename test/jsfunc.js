@@ -3,23 +3,18 @@
 'use strict';
 
 var expect = require( 'chai' ).expect;
-//var path   = require( 'path' );
-//var sinon  = require( 'sinon' );
 var tcl    = require( '../' );
-
-//const T = require('tcl');
-//T.jsProc('zzz', (a,b,c) => {console.log(a,b,c)});
-//T.cmdSync('zzz hi there you');
 
 describe( 'Call back to JS function', function () {
 
 	it( 'should be able to define new Tcl command', function (done) {
-		var res = tcl.jsFunc('zzz', (...args) => {
-console.log("Got:", ...args);
+		var res = tcl.jsFunc('xyz', (...args) => {
+			expect( args.length ).to.equal( 2 );
+			expect( args[0] ).to.equal( 'hi' );
+			expect( args[1] ).to.equal( 'there' );
 			done();
 		});
-
-//		expect( match ).to.be.an.instanceof( Array );
+		tcl.cmdSync('xyz hi there');
 	});
 
 } );

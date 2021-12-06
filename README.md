@@ -167,10 +167,10 @@ tcl.queue( 'incr x', function ( err, result ) {
 
 ### jsFunc( cmd, callback )
 
-Instructs the Tcl interpretor to create a new command: cmd.
-When this new command is encountered at any time during the life of the interpretor,
+Instructs the Tcl interpreter to create a new command: cmd.
+When this new command is encountered at any time during the life of the interpreter,
 the specified callback will be invoked with whatever parameters were supplied to cmd.
-There is currently not a command for deleting commands from the interpretor.
+There is currently not a command for deleting commands from the interpreter.
 
 #### Parameters
 

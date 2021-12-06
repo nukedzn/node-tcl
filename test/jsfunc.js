@@ -11,7 +11,7 @@ var tcl    = require( '../' );
 //T.jsProc('zzz', (a,b,c) => {console.log(a,b,c)});
 //T.cmdSync('zzz hi there you');
 
-describe( 'Call back to JS functino', function () {
+describe( 'Call back to JS function', function () {
 
 	it( 'should be able to define new Tcl command', function (done) {
 		var res = tcl.jsFunc('zzz', (...args) => {

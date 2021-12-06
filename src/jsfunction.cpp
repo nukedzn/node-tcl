@@ -2,9 +2,10 @@
 #include "jsfunction.h"
 
 JsFunction::JsFunction( Napi::Env env, Napi::FunctionReference callback, const char * cmd ) 
-	: _context(env, cmd), _env(env), _cmd(cmd), _callback(callback) {
-//	_cmd = cmd;
-//	_callback = callback;
+	: _env(env), _context(env, cmd) {
+//	_env = env;
+	_cmd = cmd;
+//	_callback = Napi::Persistent(callback);
 }
 
 

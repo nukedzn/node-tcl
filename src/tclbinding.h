@@ -22,10 +22,13 @@ public:
 	Napi::Value jsFunc	( const Napi::CallbackInfo& info);
 	
 	static Napi::Function GetClass(Napi::Env);
+	int jsCommand(ClientData, Tcl_Interp *, int, const char **);
+	void jsDelete(ClientData);
 
 private:
 
 	Tcl_Interp * _interp;
+	Napi::Env _env;
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	TaskRunner * _tasks;

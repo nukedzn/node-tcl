@@ -206,10 +206,45 @@ Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
 	}
 
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
-	Napi::Function callback = info[1].As<Napi::Function>();
+	Napi::Function jsCallback = info[1].As<Napi::Function>();
+	_func = Napi::Persistent(jsCallback);
+	
+	_func.Call({Napi::String::New(env, "hoo")});
+	
 //	JsFunction *jf = new JsFunction(env, Napi::Persistent(callback), cmd.c_str());
 
-	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), jsCommand, (void *)callback, jsDelete);
+//	Tcl_Command code = (Tcl_Command)1234;
+
+#ifdef JUNK
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
+		jsCommand, (void *)jsCallback, jsDelete);
+
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
+		std::bind(&TclBinding::jsCommand, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+		(void *)jsCallback, 
+		std::bind(&TclBinding::jsDelete, std::placeholders::_1)
+	);
+
+#endif
+
+printf("B:%p c:%s\n", &jsCallback, cmd.c_str());
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
+		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
+			auto mythis = (TclBinding *)clientData;
+			auto env = mythis->_env;
+//			Napi::FunctionReference *fr = (Napi::FunctionReference *)clientData;
+printf("CB:%p c:%s ac:%d\n", clientData, "", argc);
+			auto args = std::vector<napi_value>(argc);
+			for (auto i = 0; i < argc; ++i) {
+				args[i] = Napi::String::New(env, argv[i]);
+			}
+			mythis->_func.Call(args);
+			return TCL_OK;
+		},
+		(void *)this, 
+		[](ClientData) {
+		}
+	);
 
 	return Napi::Number::New(env, (unsigned long)code);
 

@@ -16,6 +16,7 @@ describe( 'Call back to JS function', function () {
 	it( 'should be able to define new Tcl command', function (done) {
 		var res = tcl.jsFunc('zzz', (...args) => {
 console.log("Got:", ...args);
+			done();
 		});
 
 //		expect( match ).to.be.an.instanceof( Array );

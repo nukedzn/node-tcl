@@ -12,6 +12,11 @@
 class TclBinding : public Napi::ObjectWrap<TclBinding> {
 public:
 
+	struct CmdDef {
+		TclBinding *binding;
+		Napi::FunctionReference funcRef;
+	};
+
 	TclBinding(const Napi::CallbackInfo& info);
 	~TclBinding();
 
@@ -27,7 +32,6 @@ private:
 
 	Tcl_Interp * _interp;
 	Napi::Env _env;
-	Napi::FunctionReference _func;
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	TaskRunner * _tasks;

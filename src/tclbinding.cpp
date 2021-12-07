@@ -204,21 +204,29 @@ Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
 	}
 
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
-	_func = Napi::Persistent(info[1].As<Napi::Function>());
+	Napi::FunctionReference func = Napi::Persistent(info[1].As<Napi::Function>());
+
+	CmdDef *cmdRec = new CmdDef();
+	cmdRec->funcRef = Napi::Persistent(info[1].As<Napi::Function>());
+	cmdRec->binding = this;
 	
 	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
 		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
-			TclBinding *mythis = (TclBinding *)clientData;
+			CmdDef *cmdData = (CmdDef *)clientData;
+			TclBinding *mythis = cmdData->binding;
 			Napi::Env env = mythis->_env;
 			auto args = std::vector<napi_value>(argc-1);
 			for (int i = 1; i < argc; ++i) {
 				args[i-1] = Napi::String::New(env, argv[i]);
 			}
-			mythis->_func.Call(args);
+			cmdData->funcRef.Call(args);
 			return TCL_OK;
 		},
-		(void *)this, 
-		[](ClientData) {}
+		(void *)cmdRec,
+		[](ClientData clientData) {
+			CmdDef *cmdData = (CmdDef *)clientData;
+			delete cmdData;
+		}
 	);
 
 	return Napi::Number::New(env, (unsigned long)code);

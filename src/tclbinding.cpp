@@ -9,7 +9,8 @@
 #define MSG_NO_TCL_THREADS       "Thread support disabled, please ensure Tcl is compiled with --enable-threads flag set"
 #define MSG_NO_THREAD_SUPPORT    "Thread support disabled, check g++ version for c++11 and/or Tcl thread support"
 
-TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info), _env(info.Env()) {
+TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info) {
+	Napi::Env env = info.Env();
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	_tasks = nullptr;
@@ -19,7 +20,7 @@ TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info), _env(
 	_interp = Tcl_CreateInterp();
 
 	if ( TCL_OK != Tcl_Init( _interp ) ) {
-		Napi::Error::New(_env, "Failed to initialise Tcl interpreter").ThrowAsJavaScriptException();
+		Napi::Error::New(env, "Failed to initialise Tcl interpreter").ThrowAsJavaScriptException();
 	}
 
 }
@@ -206,15 +207,13 @@ Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
 	Napi::FunctionReference func = Napi::Persistent(info[1].As<Napi::Function>());
 
-	CmdDef *cmdRec = new CmdDef();
+	CmdDef *cmdRec = new CmdDef(env);
 	cmdRec->funcRef = Napi::Persistent(info[1].As<Napi::Function>());
-	cmdRec->binding = this;
 	
 	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
 		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
 			CmdDef *cmdData = (CmdDef *)clientData;
-			TclBinding *mythis = cmdData->binding;
-			Napi::Env env = mythis->_env;
+			Napi::Env env = cmdData->env;
 			auto args = std::vector<napi_value>(argc-1);
 			for (int i = 1; i < argc; ++i) {
 				args[i-1] = Napi::String::New(env, argv[i]);

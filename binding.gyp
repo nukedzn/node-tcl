@@ -12,6 +12,9 @@
 				'tclthreads': '<!(. <(tclconfig) && echo ${TCL_THREADS})',
 				'cxx': '<!(bash gyp/cxx.sh)'
 			},
+			'defines': [
+				'NAPI_DISABLE_CPP_EXCEPTIONS',
+			],
 			'conditions': [
 				[ 'OS=="mac"', {
 					'xcode_settings': {
@@ -21,20 +24,12 @@
 					}
 				} ],
 				[ 'cxx!="false"', {
-					'cflags': [
-						'-std=c++11'
-					],
-					'defines': [
-						'HAS_CXX11'
-					]
+					'cflags': ['-std=c++11'],
+					'defines': ['HAS_CXX11']
 				} ],
 				[ 'tclthreads==1', {
-					'defines': [
-						'HAS_TCL_THREADS'
-					],
-					'sources': [
-						'src/tclworker.cpp'
-					]
+					'defines': ['HAS_TCL_THREADS'],
+					'sources': ['src/tclworker.cpp']
 				} ],
 				[ 'tclthreads==1 and cxx!="false"', {
 					'sources': [
@@ -45,8 +40,10 @@
 			],
 			'include_dirs': [
 				'<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)',
-				'<!(node -e "require(\'nan\')")'
+				'<!(node -p "require(\'node-addon-api\').include_dir")'
+				               
 			],
+			'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
 			'link_settings': {
 				'libraries': [
 					'<!(. <(tclconfig) && echo ${TCL_LIB_SPEC})'

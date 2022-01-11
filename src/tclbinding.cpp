@@ -9,20 +9,19 @@
 #define MSG_NO_TCL_THREADS       "Thread support disabled, please ensure Tcl is compiled with --enable-threads flag set"
 #define MSG_NO_THREAD_SUPPORT    "Thread support disabled, check g++ version for c++11 and/or Tcl thread support"
 
+using namespace Napi;
 
-// initialise static vars
-Nan::Persistent< v8::Function > TclBinding::constructor;
-
-TclBinding::TclBinding() {
+TclBinding::TclBinding(const Napi::CallbackInfo& info) : ObjectWrap(info) {
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	_tasks = nullptr;
 #endif
-
+ 
 	// initialise Tcl interpreter
 	_interp = Tcl_CreateInterp();
 	if ( TCL_OK != Tcl_Init( _interp ) ) {
-		Nan::ThrowError( "Failed to initialise Tcl interpreter" );
+		Napi::Env env = info.Env();
+		Napi::Error::New(env, "Failed to initialise Tcl interpreter").ThrowAsJavaScriptException();
 	}
 
 }
@@ -41,194 +40,165 @@ TclBinding::~TclBinding() {
 
 }
 
-
-void TclBinding::init( v8::Local< v8::Object > exports ) {
-
-	// stack-allocated handle scope
-	Nan::HandleScope scope;
-
-	// prepare constructor template
-	v8::Local< v8::FunctionTemplate > tpl = Nan::New< v8::FunctionTemplate >( construct );
-	tpl->SetClassName( Nan::New( "TclBinding" ).ToLocalChecked() );
-	tpl->InstanceTemplate()->SetInternalFieldCount( 1 );
-
-	// prototypes
-	Nan::SetPrototypeMethod( tpl, "cmd", cmd );
-	Nan::SetPrototypeMethod( tpl, "cmdSync", cmdSync );
-	Nan::SetPrototypeMethod( tpl, "queue", queue );
-	Nan::SetPrototypeMethod( tpl, "toArray", toArray );
-
-	constructor.Reset( tpl->GetFunction() );
-	exports->Set( Nan::New( "TclBinding" ).ToLocalChecked(), tpl->GetFunction() );
-
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  exports.Set(Napi::String::New(env, "TclBinding"), TclBinding::GetClass(env));
+  return exports;
 }
 
-
-void TclBinding::construct( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
-
-	if (! info.IsConstructCall() ) {
-
-		// invoked as `TclBinding(...)`, convert to a constructor call
-		const int argc = 1;
-		v8::Local< v8::Value > argv[ argc ] = { info[0] };
-		v8::Local< v8::Function > c = Nan::New< v8::Function >( constructor );
-		return info.GetReturnValue().Set( Nan::NewInstance( c, argc, argv ).ToLocalChecked() );
-
-	}
-
-	TclBinding * obj = new TclBinding();
-	obj->Wrap( info.This() );
-	info.GetReturnValue().Set( info.This() );
-
-}
-
-
-void TclBinding::cmd( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
+Napi::Value TclBinding::cmd( const Napi::CallbackInfo& info ) {
+	Napi::Env env = info.Env();
 
 	// validate input params
 	if ( info.Length() != 2 ) {
-		return Nan::ThrowError( "Invalid number of arguments" );
+		Napi::TypeError::New(env, "Invalid number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	if (! info[0]->IsString() ) {
-		return Nan::ThrowTypeError( "Tcl command must be a string" );
+	if (! info[0].IsString() ) {
+		Napi::TypeError::New(env, "Tcl command must be a string").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	if (! info[1]->IsFunction() ) {
-		return Nan::ThrowTypeError( "Callback must be a function" );
+	if (! info[1].IsFunction() ) {
+		Napi::TypeError::New(env, "Callback must be a function").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-
-	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
+	std::string cmd = info[0].As<Napi::String>().Utf8Value();
+	Napi::Function callback = info[1].As<Napi::Function>();
 
 #ifdef HAS_TCL_THREADS
 	// schedule an async task
-	Nan::Utf8String cmd( info[0] );
-	Nan::AsyncQueueWorker( new TclWorker( *cmd, callback ) );
+	TclWorker* tw = new TclWorker(callback, cmd.c_str());
+	tw->Queue();
 #else
-	v8::Local< v8::Value > argv[] = {
-			Nan::Error( Nan::New< v8::String >( MSG_NO_TCL_THREADS ).ToLocalChecked() )
-	};
+	Napi::Value argv[] = {Napi::String::New(env, MSG_NO_TCL_THREADS)};
 	callback->Call( 1, argv );
 #endif
 
-	info.GetReturnValue().Set( Nan::Undefined() );
+	return env.Undefined();
 
 }
 
 
-void TclBinding::cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
+Napi::Value TclBinding::cmdSync( const Napi::CallbackInfo& info ) {
+	Napi::Env env = info.Env();
 
 	// validate input params
 	if ( info.Length() < 1 ) {
-		return Nan::ThrowError( "Require a Tcl command to execute" );
+		Napi::TypeError::New(env, "Require a Tcl command to execute").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	if (! info[0]->IsString() ) {
-		return Nan::ThrowTypeError( "Tcl command must be a string" );
+	if (! info[0].IsString() ) {
+		Napi::TypeError::New(env, "Tcl command must be a string").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
-	Nan::Utf8String cmd( info[0] );
+	std::string cmd = info[0].As<Napi::String>().Utf8Value();
 
 	// evaluate command
-	int code = Tcl_EvalEx( binding->_interp, *cmd, -1, 0 );
+	int code = Tcl_EvalEx( this->_interp, cmd.c_str(), -1, 0 );
 
 	// check for errors
 	if ( code == TCL_ERROR ) {
-		return Nan::ThrowError( Tcl_GetStringResult( binding->_interp ) );
+		Napi::Error::New(env, Tcl_GetStringResult(this->_interp)).ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-
 	// grab the result
-	Tcl_Obj * result = Tcl_GetObjResult( binding->_interp );
+	Tcl_Obj * result = Tcl_GetObjResult( this->_interp );
 
 	// return result as a string
-	const char * str_result = Tcl_GetString( result );
-	v8::Local< v8::String > r_string = Nan::New< v8::String >( str_result ).ToLocalChecked();
-
-	info.GetReturnValue().Set( r_string );
-
+	return Napi::String::New(env, Tcl_GetString( result ));
 }
 
 
-void TclBinding::queue( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
+Napi::Value TclBinding::queue( const Napi::CallbackInfo& info ) {
+	Napi::Env env = info.Env();
 
 	// validate input params
 	if ( info.Length() != 2 ) {
-		return Nan::ThrowError( "Invalid number of arguments" );
+		Napi::TypeError::New(env, "Invalid number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	if (! info[0]->IsString() ) {
-		return Nan::ThrowTypeError( "Tcl command must be a string" );
+	if (! info[0].IsString() ) {
+		Napi::TypeError::New(env, "Tcl command must be a string").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	if (! info[1]->IsFunction() ) {
-		return Nan::ThrowTypeError( "Callback must be a function" );
+	if (! info[1].IsFunction() ) {
+		Napi::TypeError::New(env, "Callback must be a function").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-
-	Nan::Callback * callback = new Nan::Callback( info[1].As< v8::Function >() );
+	std::string cmd = info[0].As<Napi::String>().Utf8Value();
+	Napi::Function callback = info[1].As<Napi::Function>();
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
-
-	if ( binding->_tasks == nullptr ) {
-		binding->_tasks = new TaskRunner();
+	if ( this->_tasks == nullptr ) {
+		this->_tasks = new TaskRunner();
 	}
 
 	// queue the task
-	Nan::Utf8String cmd( info[0] );
-	binding->_tasks->queue( * cmd, callback );
+	this->_tasks->queue( callback, cmd.c_str() );
+
 #else
-	v8::Local< v8::Value > argv[] = {
-			Nan::Error( Nan::New< v8::String >( MSG_NO_THREAD_SUPPORT ).ToLocalChecked() )
-	};
+	Napi::Value argv[] = {Napi::String::New(env, MSG_NO_THREAD_SUPPORT)};
 	callback->Call( 1, argv );
 #endif
 
-	info.GetReturnValue().Set( Nan::Undefined() );
-
+	return env.Undefined();
 }
 
 
-void TclBinding::toArray( const Nan::FunctionCallbackInfo< v8::Value > &info ) {
+Napi::Value TclBinding::toArray( const Napi::CallbackInfo& info ) {
+	Napi::Env env = info.Env();
 
 	// validate input params
 	if ( info.Length() < 1 ) {
-		return info.GetReturnValue().Set( Nan::Undefined() );
+		return env.Undefined();
 	}
 
-	if (! info[0]->IsString() ) {
-		return Nan::ThrowTypeError( "Input must be a string" );
+	if (! info[0].IsString() ) {
+		Napi::TypeError::New(env, "Tcl command must be a string").ThrowAsJavaScriptException();
+		return env.Undefined();
 	}
 
-	TclBinding * binding = ObjectWrap::Unwrap< TclBinding >( info.Holder() );
-	Nan::Utf8String str( info[0] );
+	std::string str = info[0].As<Napi::String>().Utf8Value();
 
 	// create a Tcl string object
-	Tcl_Obj * obj = Tcl_NewStringObj( *str, strlen( *str ) );
+	Tcl_Obj* obj = Tcl_NewStringObj( str.c_str(), str.length() );
 
 	int objc = 0;
 	Tcl_Obj **objv;
 
 	// attempt to parse as a Tcl list
-	if ( Tcl_ListObjGetElements( binding->_interp, obj, &objc, &objv ) == TCL_OK ) {
+	if ( Tcl_ListObjGetElements( this->_interp, obj, &objc, &objv ) == TCL_OK ) {
 
-		v8::Local< v8::Array > r_array = Nan::New< v8::Array >( objc );
+		Napi::Array r_array = Napi::Array::New(env, objc);
 
 		for ( int i = 0; i < objc; i++ ) {
-			r_array->Set( i, Nan::New< v8::String >( Tcl_GetString( objv[i] ) ).ToLocalChecked() );
+			r_array[i] = Napi::String::New(env, Tcl_GetString( objv[i] ));
 		}
-
-		return info.GetReturnValue().Set( r_array );
-
+		return r_array;
 	}
 
 	// not a valid Tcl list
-	info.GetReturnValue().Set( Nan::Null() );
+	return env.Undefined();
 
 }
 
+Napi::Function TclBinding::GetClass( Napi::Env env ) {
 
+    return DefineClass(env, "TclBinding",
+		{
+			TclBinding::InstanceMethod("cmd",		&TclBinding::cmd),
+			TclBinding::InstanceMethod("cmdSync",	&TclBinding::cmdSync),
+			TclBinding::InstanceMethod("queue",		&TclBinding::queue),
+			TclBinding::InstanceMethod("toArray",	&TclBinding::toArray),
+		});
+}
+
+NODE_API_MODULE(addon, Init)

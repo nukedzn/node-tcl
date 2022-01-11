@@ -9,9 +9,8 @@
 #include <string>
 #include <condition_variable>
 
-#include <nan.h>
+#include <napi.h>
 #include "asynchandler.h"
-
 
 class TaskRunner {
 public:
@@ -25,7 +24,7 @@ public:
 	TaskRunner();
 	virtual ~TaskRunner();
 
-	void queue( const char * cmd, Nan::Callback * callback );
+	void queue( Napi::Function& callback, const char * cmd );
 
 
 private:
@@ -43,4 +42,3 @@ private:
 };
 
 #endif /*! TASKRUNNER_H */
-

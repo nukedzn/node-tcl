@@ -2,7 +2,6 @@
 #include "taskrunner.h"
 #include <tcl.h>
 
-
 TaskRunner::TaskRunner() : _terminate( false ) {
 
 	// initialise worker thread
@@ -25,7 +24,7 @@ TaskRunner::~TaskRunner() {
 }
 
 
-void TaskRunner::queue( const char * cmd, Nan::Callback * callback ) {
+void TaskRunner::queue( Napi::Function& callback, const char * cmd ) {
 
 	task_t task = {
 		cmd,
@@ -37,7 +36,7 @@ void TaskRunner::queue( const char * cmd, Nan::Callback * callback ) {
 		_tasks.push( task );
 
 		// schedule an async worker outside of main event loop
-		Nan::AsyncQueueWorker( task.handler );
+		task.handler->Queue();
 	}
 
 	// notify worker thread
@@ -88,4 +87,3 @@ void TaskRunner::worker() {
 	Tcl_DeleteInterp( interp );
 
 }
-

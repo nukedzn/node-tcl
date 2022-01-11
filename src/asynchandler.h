@@ -2,27 +2,21 @@
 #ifndef ASYNCHANDLER_H
 #define ASYNCHANDLER_H
 
-#include <nan.h>
+#include <napi.h>
 #include <atomic>
 #include <mutex>
 #include <string>
 #include <condition_variable>
 
-
-class AsyncHandler : public Nan::AsyncWorker {
+class AsyncHandler : public Napi::AsyncWorker {
 public:
 
-	AsyncHandler( Nan::Callback * callback );
+	AsyncHandler( Napi::Function& callback );
 	virtual ~ AsyncHandler();
 
 	void notify( const std::string &err, const std::string &data );
 	void Execute();
-
-
-protected:
-
-	void HandleOKCallback();
-
+	void OnOK();
 
 private:
 
@@ -36,4 +30,3 @@ private:
 };
 
 #endif /*! ASYNCHANDLER_H */
-

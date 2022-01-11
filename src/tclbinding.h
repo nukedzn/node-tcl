@@ -2,7 +2,7 @@
 #ifndef TCLBINDING_H
 #define TCLBINDING_H
 
-#include <nan.h>
+#include <napi.h>
 #include <tcl.h>
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
@@ -10,21 +10,19 @@
 #endif
 
 
-class TclBinding : public node::ObjectWrap {
+class TclBinding : public Napi::ObjectWrap<TclBinding> {
 public:
-	static void init( v8::Local< v8::Object > exports );
-
-private:
-	explicit TclBinding();
+	TclBinding(const Napi::CallbackInfo& info);
 	~TclBinding();
 
-	static void construct( const Nan::FunctionCallbackInfo< v8::Value > &info );
-	static void cmd( const Nan::FunctionCallbackInfo< v8::Value > &info );
-	static void cmdSync( const Nan::FunctionCallbackInfo< v8::Value > &info );
-	static void queue( const Nan::FunctionCallbackInfo< v8::Value > &info );
-	static void toArray( const Nan::FunctionCallbackInfo< v8::Value > &info );
+	Napi::Value cmd		( const Napi::CallbackInfo& info);
+	Napi::Value cmdSync	( const Napi::CallbackInfo& info);
+	Napi::Value queue	( const Napi::CallbackInfo& info);
+	Napi::Value toArray	( const Napi::CallbackInfo& info);
+	
+	static Napi::Function GetClass(Napi::Env);
 
-	static Nan::Persistent< v8::Function > constructor;
+private:
 
 	Tcl_Interp * _interp;
 
@@ -34,9 +32,4 @@ private:
 
 };
 
-
-// node addon initialisation
-NODE_MODULE( tcl, TclBinding::init )
-
 #endif /* !TCLBINDING_H */
-

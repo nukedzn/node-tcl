@@ -90,7 +90,6 @@ Napi::Value TclBinding::cmdSync( const Napi::CallbackInfo& info ) {
 	}
 
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
-//printf("I1:%p c:%s\n", this->_interp, cmd.c_str());
 
 	// evaluate command
 	int code = Tcl_EvalEx( this->_interp, cmd.c_str(), -1, 0 );
@@ -185,7 +184,7 @@ Napi::Value TclBinding::toArray( const Napi::CallbackInfo& info ) {
 
 }
 
-Napi::Value TclBinding::jsFunc( const Napi::CallbackInfo& info ) {
+Napi::Value TclBinding::proc( const Napi::CallbackInfo& info ) {
 	Napi::Env env = info.Env();
 
 	// validate input params
@@ -245,7 +244,7 @@ Napi::Function TclBinding::GetClass( Napi::Env env ) {
 			TclBinding::InstanceMethod("cmdSync",	&TclBinding::cmdSync),
 			TclBinding::InstanceMethod("queue",		&TclBinding::queue),
 			TclBinding::InstanceMethod("toArray",	&TclBinding::toArray),
-			TclBinding::InstanceMethod("jsFunc",	&TclBinding::jsFunc),
+			TclBinding::InstanceMethod("proc",		&TclBinding::proc),
 		});
 }
 

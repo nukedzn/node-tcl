@@ -165,7 +165,7 @@ tcl.queue( 'incr x', function ( err, result ) {
 ```
 
 
-### jsFunc( cmd, callback )
+### proc( cmd, callback )
 
 Instructs the Tcl interpreter to create a new command: cmd.
 When this new command is encountered at any time during the life of the interpreter,
@@ -182,11 +182,11 @@ There is currently not a command for deleting commands from the interpreter.
 #### Example
 
 ``` js
-tcl.jsFunc( 'myNewCmd', function ( arg1, arg2 ) {
+tcl.proc( 'newTclCmd', function ( arg1, arg2 ) {
 	console.log( 'Got', arg1, arg2 ); // Got some arguments
 } );
 
-tcl.cmdSync( 'myNewCmd some arguments' );
+tcl.cmdSync( 'newTclCmd some arguments' );
 ```
 
 

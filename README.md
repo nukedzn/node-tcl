@@ -9,7 +9,9 @@ node-tcl
 [![Dependency Status](https://david-dm.org/nukedzn/node-tcl.svg)](https://david-dm.org/nukedzn/node-tcl)
 [![devDependency Status](https://david-dm.org/nukedzn/node-tcl/dev-status.svg)](https://david-dm.org/nukedzn/node-tcl#info=devDependencies)
 
-Node.js Tcl bindings to execute Tcl commands using a native Tcl Interpreter.
+Provides Node.js bindings to execute Tcl commands using a native Tcl Interpreter.
+Also includes the ability to define new commands in the Tcl intepretor that will invoke a
+specified JavaScript function.
 
 
 ## Dependencies
@@ -20,6 +22,10 @@ The build process will look for ```tclConfig.sh``` to identify Tcl include direc
 and linker flags. If you are using a Tcl version older than 8.5 or want to link to a specific
 Tcl installation use the ```TCLCONFIG``` environment variable to override the default behaviour
 (e.g. ```export TCLCONFIG=/path/to/tclConfig.sh```).
+
+This version has been updated to use [node-addon-api](https://github.com/nodejs/node-addon-api)
+and so should be compatible with future versions of node.js.  Unfortunately, it may not build
+properly on very old node.js versions.
 
 ### Optional Dependencies
 
@@ -156,6 +162,31 @@ tcl.queue( 'incr x', function ( err, result ) {
 
 	console.log( result.data() ); // 2
 } );
+```
+
+
+### proc( cmd, callback )
+
+Instructs the Tcl interpreter to create a new command: cmd.
+When this new command is encountered at any time during the life of the interpreter,
+the specified callback will be invoked with whatever parameters were supplied to cmd.
+There is currently not a command for deleting commands from the interpreter.
+
+#### Parameters
+
+| Name     | Type   | Description               |
+|----------|--------|---------------------------|
+| cmd      | String | New Tcl command to create |
+| callback | [Callback](http://nukedzn.github.io/node-tcl/docs/Tcl.html#~cmdCallback) | Callback method to handle the command |
+
+#### Example
+
+``` js
+tcl.proc( 'newTclCmd', function ( arg1, arg2 ) {
+	console.log( 'Got', arg1, arg2 ); // Got some arguments
+} );
+
+tcl.cmdSync( 'newTclCmd some arguments' );
 ```
 
 

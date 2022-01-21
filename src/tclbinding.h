@@ -9,9 +9,15 @@
 #include "taskrunner.h"
 #endif
 
-
 class TclBinding : public Napi::ObjectWrap<TclBinding> {
 public:
+
+	struct CmdDef {
+		Napi::Env env;
+		Napi::FunctionReference funcRef;
+		CmdDef(Napi::Env env) : env(env) {};
+	};
+
 	TclBinding(const Napi::CallbackInfo& info);
 	~TclBinding();
 
@@ -19,6 +25,7 @@ public:
 	Napi::Value cmdSync	( const Napi::CallbackInfo& info);
 	Napi::Value queue	( const Napi::CallbackInfo& info);
 	Napi::Value toArray	( const Napi::CallbackInfo& info);
+	Napi::Value proc	( const Napi::CallbackInfo& info);
 	
 	static Napi::Function GetClass(Napi::Env);
 

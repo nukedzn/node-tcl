@@ -9,7 +9,7 @@
   },
   "scripts": {
     "coverage": "nyc --reporter=html --reporter=text-summary mocha",
-    "coverage:ci": "nyc --reporter=text-summary mocha",
+    "coverage:ci": "nyc --reporter=lcovonly --reporter=text-summary mocha",
     "docs": "jsdoc -c jsdoc-conf.json ./README.md",
     "lint": "jshint index.js lib test",
     "test": "mocha"

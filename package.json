@@ -8,12 +8,10 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "coverage": "istanbul cover _mocha -- --reporter spec",
-    "coverage:lcovonly": "istanbul cover _mocha --report lcovonly -- --reporter spec",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "coverage": "nyc --reporter=html --reporter=text-summary mocha",
+    "coverage:ci": "nyc --reporter=text-summary mocha",
     "docs": "jsdoc -c jsdoc-conf.json ./README.md",
     "lint": "jshint index.js lib test",
-    "precoveralls": "npm run coverage:lcovonly",
     "test": "mocha"
   },
   "keywords": [
@@ -39,10 +37,9 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "coveralls": "^3.1.1",
-    "istanbul": "^0.4.5",
     "jshint": "^2.9.5",
-    "mocha": "^9.1.3",
+    "mocha": "^9.2.0",
+    "nyc": "^15.1.0",
     "sinon": "^4.1.1"
   }
 }

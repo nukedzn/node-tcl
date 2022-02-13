@@ -14,4 +14,8 @@ jobs:
           node-version: lts/*
           cache: npm
       - run: npm install
-      - run: npm test
+      - run: npm run lint
+      - run: npm run coverage:ci
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

@@ -2,12 +2,14 @@
 #
 
 # node / npm
-build
-node_modules
+build/
+node_modules/
 npm-debug.log
 
-# istanbul
-coverage
+# istanbul/nyc
+.nyc_output/
+coverage/
+coverage.lcov
 
 # jsdoc generated docs
 docs

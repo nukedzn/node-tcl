@@ -1,10 +1,8 @@
 node-tcl
 ========
 
-[![Join the chat at https://gitter.im/nukedzn/node-tcl](https://nukedzn.github.io/badges/gitter.svg)](https://gitter.im/nukedzn/node-tcl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![npm version](https://img.shields.io/npm/v/tcl.svg)](https://www.npmjs.com/package/tcl)
-[![Build Status](https://travis-ci.org/nukedzn/node-tcl.svg)](https://travis-ci.org/nukedzn/node-tcl)
+[![build](https://github.com/nukedzn/node-tcl/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/nukedzn/node-tcl/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/nukedzn/node-tcl/branch/master/graph/badge.svg?token=AAhVnMCHcn)](https://codecov.io/gh/nukedzn/node-tcl)
 
 Provides Node.js bindings to execute Tcl commands using a native Tcl Interpreter.

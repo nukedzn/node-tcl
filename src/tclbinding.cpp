@@ -58,20 +58,18 @@ Napi::Value TclBinding::cmd( const Napi::CallbackInfo& info ) {
 		return env.Undefined();
 	}
 
+#ifdef HAS_TCL_THREADS
+	// schedule an async task
 	std::string cmd = info[0].As<Napi::String>().Utf8Value();
 	Napi::Function callback = info[1].As<Napi::Function>();
 
-#ifdef HAS_TCL_THREADS
-	// schedule an async task
 	TclWorker* tw = new TclWorker(callback, cmd.c_str());
 	tw->Queue();
 #else
-	Napi::Value argv[] = {Napi::String::New(env, MSG_NO_TCL_THREADS)};
-	callback->Call( 1, argv );
+	Napi::Error::New(env, MSG_NO_TCL_THREADS).ThrowAsJavaScriptException();
 #endif
 
 	return env.Undefined();
-
 }
 
 
@@ -127,20 +125,21 @@ Napi::Value TclBinding::queue( const Napi::CallbackInfo& info ) {
 		return env.Undefined();
 	}
 
-	std::string cmd = info[0].As<Napi::String>().Utf8Value();
-	Napi::Function callback = info[1].As<Napi::Function>();
+
 
 #if defined(HAS_CXX11) && defined(HAS_TCL_THREADS)
 	if ( this->_tasks == nullptr ) {
 		this->_tasks = new TaskRunner();
 	}
 
+	std::string cmd = info[0].As<Napi::String>().Utf8Value();
+	Napi::Function callback = info[1].As<Napi::Function>();
+
 	// queue the task
 	this->_tasks->queue( callback, cmd.c_str() );
 
 #else
-	Napi::Value argv[] = {Napi::String::New(env, MSG_NO_THREAD_SUPPORT)};
-	callback->Call( 1, argv );
+	Napi::Error::New(env, MSG_NO_TCL_THREADS).ThrowAsJavaScriptException();
 #endif
 
 	return env.Undefined();
@@ -208,8 +207,8 @@ Napi::Value TclBinding::proc( const Napi::CallbackInfo& info ) {
 
 	CmdDef *cmdRec = new CmdDef(env);
 	cmdRec->funcRef = Napi::Persistent(info[1].As<Napi::Function>());
-	
-	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
+
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(),
 		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
 			CmdDef *cmdData = (CmdDef *)clientData;
 			Napi::Env env = cmdData->env;

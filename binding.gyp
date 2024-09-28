@@ -41,7 +41,6 @@
 			'include_dirs': [
 				'<!(. <(tclconfig) && echo ${TCL_INCLUDE_SPEC} | sed s/-I//g)',
 				'<!(node -p "require(\'node-addon-api\').include_dir")'
-				               
 			],
 			'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
 			'link_settings': {

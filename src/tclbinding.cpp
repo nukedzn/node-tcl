@@ -70,7 +70,6 @@ Napi::Value TclBinding::cmd( const Napi::CallbackInfo& info ) {
 #endif
 
 	return env.Undefined();
-
 }
 
 
@@ -208,8 +207,8 @@ Napi::Value TclBinding::proc( const Napi::CallbackInfo& info ) {
 
 	CmdDef *cmdRec = new CmdDef(env);
 	cmdRec->funcRef = Napi::Persistent(info[1].As<Napi::Function>());
-	
-	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(), 
+
+	Tcl_Command code = Tcl_CreateCommand(this->_interp, cmd.c_str(),
 		[](ClientData clientData, Tcl_Interp *ti, int argc, const char *argv[]) {
 			CmdDef *cmdData = (CmdDef *)clientData;
 			Napi::Env env = cmdData->env;

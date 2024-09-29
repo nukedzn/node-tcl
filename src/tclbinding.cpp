@@ -173,7 +173,7 @@ Napi::Value TclBinding::toArray( const Napi::CallbackInfo& info ) {
 		Napi::Array r_array = Napi::Array::New(env, objc);
 
 		for ( int i = 0; i < objc; i++ ) {
-			r_array[i] = Napi::String::New(env, Tcl_GetString( objv[i] ));
+			r_array.Set(static_cast<uint32_t>(i), Tcl_GetString( objv[i] ));
 		}
 		return r_array;
 	}
